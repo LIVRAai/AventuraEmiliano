@@ -462,7 +462,7 @@
     aiTutorChat.innerHTML = `
       <div class="tutor-message nova-message">
         <span>NOVA</span>
-        <p>Si una división no se entiende, pregúntame. No te daré la respuesta de una vez: la vamos a descubrir juntos, un paso a la vez.</p>
+        <p>Pregúntame, yo puedo ayudarte.</p>
       </div>`;
   }
 
@@ -505,7 +505,7 @@
     const previousHistory = tutorHistory.slice(-8);
 
     aiTutorCard.hidden = false;
-    aiTutorTitle.textContent = reason === 'error' ? 'Probemos un paso diferente, Emiliano' : 'Vamos paso a paso, Emiliano';
+    aiTutorTitle.textContent = 'Estoy aquí, Emiliano';
     appendTutorMessage('user', userQuestion);
     tutorHistory.push({ role: 'user', content: userQuestion });
     const pending = appendTutorMessage('assistant', 'Estoy mirando tu ejercicio…', true);

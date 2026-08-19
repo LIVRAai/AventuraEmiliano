@@ -59,3 +59,7 @@ Esta versión convierte NOVA en un tutor conversacional. Emiliano puede escribir
 El archivo `api/tutor.js` contiene las reglas pedagógicas del tutor. Esas reglas exigen enseñanza concreta, estructurada, paso a paso y sin mencionar etiquetas diagnósticas. La clave sigue leyendo `OPENAI_API_KEY` desde Vercel.
 
 Después de subir esta versión a GitHub, espera el nuevo deployment de Vercel o ejecuta **Redeploy**. No necesitas cambiar la variable `OPENAI_API_KEY`.
+
+## Interfaz de NOVA
+
+El saludo visible del tutor es intencionalmente breve: **“Pregúntame, yo puedo ayudarte.”** La lógica pedagógica detallada permanece en `api/tutor.js` y no se muestra al niño.
