@@ -44,7 +44,7 @@
       <div class="top-actions">
         <button id="fieldGuideBtn" class="icon-btn" aria-label="Abrir bestiario de Emiliano">📖</button>
         <button id="mapBtn" class="icon-btn" aria-label="Ver ruta de mundos">🗺️</button>
-        <button id="soundBtn" class="icon-btn" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊</button>
+        <button id="settingsBtn" class="icon-btn" aria-label="Abrir configuración">⚙️</button>
       </div>
     </header>
 
@@ -160,9 +160,6 @@
       <button id="replayBtn" class="primary-btn">Volver a explorar</button>
     </section>
 
-    <footer>
-      <button id="resetBtn" class="text-btn">Reiniciar aventura</button>
-    </footer>
   </main>
 
   <div id="worldModal" class="modal" hidden>
@@ -194,6 +191,41 @@
       <p class="guide-copy">Cada división correcta recupera una ficha. Toca una criatura desbloqueada para volver a estudiarla.</p>
       <div id="guideProgress" class="guide-progress"></div>
       <div id="fieldGuideGrid" class="field-guide-grid"></div>
+    </div>
+  </div>
+
+
+  <div id="settingsModal" class="modal" hidden>
+    <div class="modal-card settings-modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">AJUSTES</p>
+          <h2 id="settingsTitle">Configuración</h2>
+        </div>
+        <button id="closeSettingsBtn" class="icon-btn" aria-label="Cerrar configuración">✕</button>
+      </div>
+
+      <div class="settings-list">
+        <div class="settings-row">
+          <div class="settings-copy">
+            <strong>Sonido</strong>
+            <span>Activa o desactiva los sonidos de la expedición.</span>
+          </div>
+          <button id="soundBtn" class="settings-toggle" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊 Activado</button>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <div class="settings-row settings-row-danger">
+          <div class="settings-copy">
+            <strong>Reiniciar aventura</strong>
+            <span>Borra el progreso guardado y vuelve a la misión 1.</span>
+          </div>
+          <button id="resetBtn" class="settings-danger-btn" type="button">Reiniciar</button>
+        </div>
+
+        <p class="settings-warning">Esta opción borra el progreso de Emiliano en este dispositivo.</p>
+      </div>
     </div>
   </div>
 

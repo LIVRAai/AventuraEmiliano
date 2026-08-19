@@ -32,3 +32,8 @@ No pongas la clave en GitHub.
 2. Espera el deployment de Vercel.
 3. Abre `/api/health` y confirma `aiConfigured: true`.
 4. Completa una misión y revisa que aparezca el bloque “NOVA · LO QUE ACABAS DE DESCUBRIR”.
+
+
+## Configuración dentro del juego
+
+La opción **Reiniciar aventura** ya no aparece en la pantalla principal. Ahora está dentro del botón **⚙️ Configuración**, junto con el control de sonido. El reinicio pide confirmación antes de borrar el progreso local.

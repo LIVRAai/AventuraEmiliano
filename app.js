@@ -14,6 +14,9 @@
   const aiStatus = $('#aiStatus');
   const soundBtn = $('#soundBtn');
   const resetBtn = $('#resetBtn');
+  const settingsBtn = $('#settingsBtn');
+  const settingsModal = $('#settingsModal');
+  const closeSettingsBtn = $('#closeSettingsBtn');
   const rewardCard = $('#rewardCard');
   const rewardTitle = $('#rewardTitle');
   const rewardText = $('#rewardText');
@@ -384,7 +387,7 @@
   }
 
   missionTotal.textContent = missions.length;
-  soundBtn.textContent = soundOn ? '🔊' : '🔇';
+  soundBtn.textContent = soundOn ? '🔊 Activado' : '🔇 Desactivado';
   soundBtn.setAttribute('aria-pressed', String(soundOn));
 
   function audioTone(freq = 440, duration = .08, type = 'sine', gain = .05, delay = 0) {
@@ -1328,19 +1331,32 @@
     soundOn = !soundOn;
     localStorage.setItem('emilianoSound', soundOn ? 'on' : 'off');
     saveGameState();
-    soundBtn.textContent = soundOn ? '🔊' : '🔇';
+    soundBtn.textContent = soundOn ? '🔊 Activado' : '🔇 Desactivado';
     soundBtn.setAttribute('aria-pressed', String(soundOn));
     if (soundOn) playTap();
   });
 
   resetBtn.addEventListener('click', () => {
+    playTap();
+
+    const confirmed = window.confirm(
+      '¿Quieres reiniciar la aventura? Se borrará el progreso guardado de Emiliano en este dispositivo.'
+    );
+
+    if (!confirmed) return;
+
     mission = 0;
     clearCurrentMissionState();
     localStorage.setItem('emilianoMission', '0');
     localStorage.setItem('emilianoUnlocked', '0');
     localStorage.removeItem(SAVE_KEY);
+
+    settingsModal.hidden = true;
+    document.body.classList.remove('modal-open');
+
     gameArea.hidden = false;
     renderMission({ restore: false });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     showToast('La expedición comenzó de nuevo 🚀');
   });
 
@@ -1353,6 +1369,21 @@
     gameArea.hidden = false;
     renderMission({ restore: false });
     window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  settingsBtn.addEventListener('click', () => {
+    playTap();
+    settingsModal.hidden = false;
+    document.body.classList.add('modal-open');
+  });
+
+  closeSettingsBtn.addEventListener('click', () => {
+    settingsModal.hidden = true;
+    document.body.classList.remove('modal-open');
+  });
+
+  settingsModal.addEventListener('click', (e) => {
+    if (e.target === settingsModal) closeSettingsBtn.click();
   });
 
   mapBtn.addEventListener('click', () => {
