@@ -487,18 +487,14 @@
     aiTutorQuickBtns.forEach(btn => btn.disabled = isBusy);
   }
 
-  function defaultTutorQuestion(reason) {
-    if (reason === 'error') return 'Intenté resolverlo, pero todavía no me sale. Guíame paso a paso.';
-    if (reason === 'visual') return 'Muéstramelo con objetos o grupos.';
-    if (reason === 'step') return 'Dame solamente el siguiente paso.';
-    if (reason === 'another') return 'Explícamelo de otra forma.';
-    return 'No entiendo cómo empezar esta división.';
-  }
-
-  async function requestTutor(reason = 'help', question = '') {
+  async function requestTutor(reason = 'question', question = '') {
     if (tutorBusy) return;
     const m = missions[mission];
-    const userQuestion = (question || defaultTutorQuestion(reason)).trim().slice(0, 180);
+
+    // NOVA nunca inventa mensajes en nombre de Emiliano.
+    // Solo enviamos al tutor una pregunta que Emiliano haya escrito
+    // o una acción rápida que él haya pulsado voluntariamente.
+    const userQuestion = String(question || '').trim().slice(0, 180);
     if (!userQuestion) return;
 
     const requestId = ++tutorRequestId;
@@ -593,7 +589,9 @@
     gameArea.classList.add('shake');
     if (m.type === 'share') showToast('Aún no están iguales. Cuenta cada grupo y vuelve a ajustar 🙂', 2600);
     else showToast('Ese código no abrió la puerta. Prueba otra estrategia o usa una pista.', 2600);
-    if (attemptCount >= 2) requestTutor('error');
+
+    // No abrimos NOVA ni escribimos por Emiliano automáticamente.
+    // Si quiere ayuda, puede tocar “Preguntar a NOVA”.
   }
 
   function completeGame() {
@@ -650,8 +648,11 @@
   aiTutorBtn.addEventListener('click', () => {
     playTap();
     aiTutorCard.hidden = false;
-    if (tutorHistory.length === 0) requestTutor('help');
-    else aiTutorInput.focus();
+
+    // Abrir el tutor no crea ninguna pregunta automática.
+    // Emiliano decide qué quiere preguntar.
+    aiTutorInput.focus({ preventScroll: true });
+    aiTutorCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
 
   aiTutorForm.addEventListener('submit', (e) => {

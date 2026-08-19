@@ -63,3 +63,8 @@ Después de subir esta versión a GitHub, espera el nuevo deployment de Vercel o
 ## Interfaz de NOVA
 
 El saludo visible del tutor es intencionalmente breve: **“Pregúntame, yo puedo ayudarte.”** La lógica pedagógica detallada permanece en `api/tutor.js` y no se muestra al niño.
+
+
+## Ajuste NOVA 4.1
+
+Al abrir `Preguntar a NOVA`, el chat solo muestra `Pregúntame, yo puedo ayudarte.`. La aplicación no crea mensajes automáticos atribuidos a Emiliano. Los mensajes `EMILIANO` aparecen únicamente cuando él escribe y envía una pregunta o pulsa voluntariamente un botón rápido. Tampoco se inicia una conversación automáticamente después de errores.
