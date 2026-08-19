@@ -1,19 +1,22 @@
-LA EXPEDICIÓN DE EMILIANO
-Versión narrativa + Bestiario
+LA EXPEDICIÓN DE EMILIANO — versión con Tutor IA
 
-Contenido:
-- Intro cinematográfica personalizada para Emiliano.
-- 36 misiones distribuidas en 6 mundos.
-- Progresión desde reparto visual hasta divisiones con divisores de dos cifras.
-- Historia continua basada en recuperar el Atlas Animal.
-- Cada animal funciona como personaje/guardián de una misión.
-- Ficha de campo: qué es, dónde vive, qué come y habilidad/adaptación especial.
-- Bestiario de Emiliano con criaturas desbloqueables para repasar.
-- Tardígrado con encuentro personalizado e ilustración propia.
-- La división sigue siendo el requisito obligatorio para avanzar.
-- Sonidos activables/desactivables.
-- Pistas sin penalización y sin cronómetro.
-- Guardado del progreso y del bestiario en el dispositivo usando localStorage.
-- Vista adaptable a móvil y tablet.
+ARCHIVOS PRINCIPALES
+- index.html ........ interfaz del juego
+- styles.css ........ diseño, animaciones y móvil/tablet
+- app.js ............ misiones, divisiones, sonidos y conexión a /api/tutor
+- server.mjs ........ servidor que protege la clave y llama a OpenAI
+- .env.example ...... muestra EXACTAMENTE dónde debes pegar una clave NUEVA
+- CONFIGURA_LA_IA.md  instrucciones paso a paso
+- .gitignore ........ evita subir .env por accidente
+- package.json ...... dependencias y comandos
 
-Abrir index.html en un navegador moderno.
+IMPORTANTE
+La clave de OpenAI NO va en index.html ni app.js.
+Lee CONFIGURA_LA_IA.md.
+
+EJECUCIÓN
+1. Crea .env a partir de .env.example
+2. Pega una clave NUEVA en OPENAI_API_KEY=
+3. npm install
+4. npm start
+5. abre http://localhost:3000

@@ -255,3 +255,24 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
   .profile-hero{grid-template-columns:86px 1fr;gap:11px}.profile-visual{min-height:86px}.profile-visual .emoji-art{font-size:3.3rem}.profile-visual .tardigrade-art{width:82px;height:60px}
   .profile-facts{grid-template-columns:1fr}.top-actions{gap:5px}.top-actions .icon-btn{width:43px;height:43px}
 }
+
+/* ===== TUTOR IA / NOVA ===== */
+.actions { grid-template-columns:1fr 1fr 1.35fr; }
+.ai-btn { border-color:rgba(157,124,255,.38);background:linear-gradient(145deg,rgba(157,124,255,.16),rgba(88,230,255,.08)); }
+.ai-tutor-card { margin-top:14px;padding:16px;border-radius:24px;background:linear-gradient(145deg,rgba(157,124,255,.15),rgba(88,230,255,.08));border:1px solid rgba(157,124,255,.30);box-shadow:var(--shadow); }
+.ai-tutor-head { display:grid;grid-template-columns:auto 1fr auto;gap:11px;align-items:center; }
+.nova-orb { width:46px;height:46px;border-radius:16px;display:grid;place-items:center;color:#0b1333;font-weight:1000;background:linear-gradient(145deg,#c7b7ff,#74edff);box-shadow:0 0 24px rgba(157,124,255,.3); }
+.ai-tutor-head strong { display:block;font-size:.92rem; }
+.ai-status { padding:5px 8px;border-radius:999px;background:rgba(112,240,167,.12);border:1px solid rgba(112,240,167,.2);color:var(--green);font-size:.6rem;font-weight:1000;letter-spacing:.08em; }
+.ai-status.loading { color:var(--yellow);border-color:rgba(255,216,77,.2);background:rgba(255,216,77,.08); }
+.ai-status.error { color:#ff9fbb;border-color:rgba(255,112,183,.25);background:rgba(255,112,183,.08); }
+#aiTutorText { margin:12px 0 0;color:#eef2ff;line-height:1.55;font-size:.9rem; }
+.ai-again-btn { margin-top:12px;min-height:42px;padding:9px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:white;font-weight:900;cursor:pointer; }
+.ai-again-btn:disabled,.ai-btn:disabled { opacity:.55;cursor:progress; }
+
+@media (max-width:560px) {
+  .actions{grid-template-columns:1fr 1fr}.actions .primary-btn{grid-column:1 / -1}
+}
+@media (max-width:390px) {
+  .actions{grid-template-columns:1fr}.actions .primary-btn{grid-column:auto}
+}

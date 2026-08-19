@@ -3,6 +3,12 @@
   const gameArea = $('#gameArea');
   const checkBtn = $('#checkBtn');
   const hintBtn = $('#hintBtn');
+  const aiTutorBtn = $('#aiTutorBtn');
+  const aiTutorCard = $('#aiTutorCard');
+  const aiTutorTitle = $('#aiTutorTitle');
+  const aiTutorText = $('#aiTutorText');
+  const aiTutorAgainBtn = $('#aiTutorAgainBtn');
+  const aiStatus = $('#aiStatus');
   const soundBtn = $('#soundBtn');
   const resetBtn = $('#resetBtn');
   const rewardCard = $('#rewardCard');
@@ -156,6 +162,8 @@
   }
   let selectedCreature = null;
   let selectedAnswer = null;
+  let attemptCount = 0;
+  let tutorRequestId = 0;
 
   missionTotal.textContent = missions.length;
   soundBtn.textContent = soundOn ? '🔊' : '🔇';
@@ -303,6 +311,11 @@
   function renderMission() {
     selectedCreature = null;
     selectedAnswer = null;
+    attemptCount = 0;
+    aiTutorCard.hidden = true;
+    aiTutorText.textContent = 'Puedo darte otra forma de pensar esta división sin decirte la respuesta.';
+    aiStatus.textContent = 'IA';
+    aiStatus.className = 'ai-status';
     rewardCard.hidden = true;
     finalCard.hidden = true;
     checkBtn.hidden = false;
@@ -425,6 +438,74 @@
     return bank && bank.children.length === 0 && counts.every(c => c === target);
   }
 
+
+  function getAttemptSummary(m) {
+    if (m.type === 'equation') {
+      return selectedAnswer === null
+        ? 'Todavía no ha elegido una respuesta.'
+        : `Eligió ${selectedAnswer} como respuesta.`;
+    }
+
+    const bank = $('#bank');
+    const counts = [...document.querySelectorAll('.zone-items')].map(z => z.children.length);
+    const remaining = bank ? bank.children.length : m.total;
+    return `Repartió los objetos así: [${counts.join(', ')}]. Quedan ${remaining} objetos sin repartir.`;
+  }
+
+  async function requestTutor(reason = 'help') {
+    const m = missions[mission];
+    const requestId = ++tutorRequestId;
+    aiTutorCard.hidden = false;
+    aiTutorTitle.textContent = reason === 'error' ? 'Probemos otra estrategia, Emiliano' : 'Pensemos juntos, Emiliano';
+    aiTutorText.textContent = 'NOVA está preparando una pista…';
+    aiStatus.textContent = 'PENSANDO';
+    aiStatus.className = 'ai-status loading';
+    aiTutorBtn.disabled = true;
+    aiTutorAgainBtn.disabled = true;
+
+    const payload = {
+      reason,
+      missionNumber: mission + 1,
+      missionTitle: m.title,
+      animal: m.animal,
+      story: m.story,
+      prompt: m.prompt,
+      hint: m.hint,
+      type: m.type,
+      equation: m.type === 'equation' ? { dividend: m.equation[0], divisor: m.equation[1], quotient: m.equation[2] } : null,
+      sharing: m.type === 'share' ? { total: m.total, groups: m.groups, quotient: m.total / m.groups } : null,
+      attempt: getAttemptSummary(m),
+      attemptCount
+    };
+
+    try {
+      const res = await fetch('/api/tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'No fue posible conectar con NOVA.');
+      if (requestId !== tutorRequestId) return;
+      aiTutorText.textContent = data.message || 'Mira los grupos y busca que todos queden exactamente iguales.';
+      aiStatus.textContent = 'LISTO';
+      aiStatus.className = 'ai-status';
+      playTap();
+    } catch (err) {
+      if (requestId !== tutorRequestId) return;
+      aiTutorText.textContent = err.message.includes('configurada')
+        ? 'La IA todavía no está configurada. Un adulto debe agregar OPENAI_API_KEY en el archivo .env del servidor.'
+        : 'NOVA no pudo conectarse ahora. Puedes seguir jugando con la pista normal.';
+      aiStatus.textContent = 'SIN CONEXIÓN';
+      aiStatus.className = 'ai-status error';
+    } finally {
+      if (requestId === tutorRequestId) {
+        aiTutorBtn.disabled = false;
+        aiTutorAgainBtn.disabled = false;
+      }
+    }
+  }
+
   function success() {
     playSuccess();
     gameArea.classList.remove('shake');
@@ -445,12 +526,14 @@
   }
 
   function incorrect(m) {
+    attemptCount += 1;
     playOops();
     gameArea.classList.remove('shake');
     void gameArea.offsetWidth;
     gameArea.classList.add('shake');
     if (m.type === 'share') showToast('Aún no están iguales. Cuenta cada grupo y vuelve a ajustar 🙂', 2600);
     else showToast('Ese código no abrió la puerta. Prueba otra estrategia o usa una pista.', 2600);
+    if (attemptCount >= 2) requestTutor('error');
   }
 
   function completeGame() {
@@ -502,6 +585,16 @@
   hintBtn.addEventListener('click', () => {
     playTap();
     showToast(missions[mission].hint, 3200);
+  });
+
+  aiTutorBtn.addEventListener('click', () => {
+    playTap();
+    requestTutor('help');
+  });
+
+  aiTutorAgainBtn.addEventListener('click', () => {
+    playTap();
+    requestTutor('another');
   });
 
   soundBtn.addEventListener('click', () => {
