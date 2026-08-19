@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#111a46" />
+  <title>La Expedición de Emiliano</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">EXPEDICIÓN MATEMÁTICA</p>
+        <h1>Hola, Emiliano 👋</h1>
+      </div>
+      <button id="soundBtn" class="icon-btn" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊</button>
+    </header>
+
+    <section class="hero-card" aria-labelledby="missionTitle">
+      <div class="hero-copy">
+        <span class="pill">Misión <span id="missionNumber">1</span> de 3</span>
+        <h2 id="missionTitle">Reparte en partes iguales</h2>
+        <p id="missionPrompt">Tenemos 8 criaturas y 2 refugios. Cada refugio debe recibir la misma cantidad.</p>
+      </div>
+      <div class="mascot" id="mascot" role="img" aria-label="Robot explorador Nova">
+        <div class="antenna"></div>
+        <div class="face"><span></span><span></span></div>
+        <div class="body">NOVA</div>
+      </div>
+    </section>
+
+    <section class="progress-wrap" aria-label="Progreso de Emiliano">
+      <div class="progress-label"><span>Tu expedición</span><strong id="progressText">0%</strong></div>
+      <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
+    </section>
+
+    <section id="gameArea" class="game-card" aria-live="polite"></section>
+
+    <section class="actions">
+      <button id="hintBtn" class="secondary-btn">💡 Pista</button>
+      <button id="checkBtn" class="primary-btn">Comprobar</button>
+    </section>
+
+    <section class="reward-card" id="rewardCard" hidden>
+      <div class="reward-icon">✨</div>
+      <div>
+        <p class="eyebrow">DESCUBRIMIENTO</p>
+        <h3 id="rewardTitle">¡Muy bien, Emiliano!</h3>
+        <p id="rewardText">Encontraste una nueva forma de repartir.</p>
+      </div>
+    </section>
+
+    <footer>
+      <button id="resetBtn" class="text-btn">Reiniciar aventura</button>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
