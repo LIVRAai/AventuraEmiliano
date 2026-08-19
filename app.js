@@ -58,6 +58,11 @@
   const profileHabitat = $('#profileHabitat');
   const profileDiet = $('#profileDiet');
   const profilePower = $('#profilePower');
+  const novaFeedbackCard = $('#novaFeedbackCard');
+  const novaFeedbackStatus = $('#novaFeedbackStatus');
+  const novaFeedbackText = $('#novaFeedbackText');
+  const nextTeaser = $('#nextTeaser');
+  const rewardNextBtn = $('#rewardNextBtn');
 
   const worlds = [
     { name: 'Bosque de los Repartos', icon: '🌿', color: '#70f0a7', subtitle: 'Aprender a repartir' },
@@ -108,21 +113,165 @@
   };
 
   const missions = [
-    // CAPÍTULO 1 — concepto de reparto
-    {w:0,type:'share',title:'El primer código',story:'Dos geckos llegaron al campamento. El Atlas necesita que repartas su alimento sin dejar a ninguno atrás.',prompt:'Reparte 6 insectos entre 2 geckos por partes iguales.',total:6,groups:2,emoji:'🦗',group:'Gecko',animal:'Gecko',animalEmoji:'🦎',hint:'Da un insecto a cada gecko por turnos.',reward:'6 repartido entre 2 es 3.',fact:'Los geckos pueden trepar superficies gracias a estructuras microscópicas en sus dedos.'},
-    {w:0,type:'share',title:'La merienda del panda rojo',story:'Un puente de bambú solo se abrirá si los dos pandas reciben exactamente lo mismo.',prompt:'Reparte 8 trozos de bambú entre 2 pandas rojos.',total:8,groups:2,emoji:'🎋',group:'Panda',animal:'Panda rojo',animalEmoji:'🦝',hint:'Alterna: uno aquí, uno allá, hasta terminar.',reward:'8 ÷ 2 = 4.',fact:'El panda rojo pasa mucho tiempo en los árboles y usa su larga cola para mantener el equilibrio.'},
-    {w:0,type:'share',title:'Ranas bajo la lluvia',story:'Tres pequeñas ranas esperan alimento mientras cae una lluvia brillante sobre el bosque.',prompt:'Reparte 9 insectos entre 3 ranas.',total:9,groups:3,emoji:'🪰',group:'Rana',animal:'Rana de cristal',animalEmoji:'🐸',hint:'Haz tres grupos y agrega un insecto a cada uno en cada vuelta.',reward:'9 ÷ 3 = 3.',fact:'Algunas ranas de cristal tienen la piel del vientre tan transparente que se pueden ver órganos internos.'},
-    {w:0,type:'share',title:'Hojas para los perezosos',story:'Los perezosos están descansando. El código aparece solo cuando todos tienen la misma cantidad.',prompt:'Reparte 12 hojas entre 3 perezosos.',total:12,groups:3,emoji:'🍃',group:'Perezoso',animal:'Perezoso',animalEmoji:'🦥',hint:'Reparte una hoja a cada perezoso y repite.',reward:'12 ÷ 3 = 4.',fact:'Los perezosos se mueven lentamente y gran parte de su vida transcurre en los árboles.'},
-    {w:0,type:'share',title:'El desayuno de los tucanes',story:'Tres tucanes custodian una llave del Atlas. Para entregarla, quieren un reparto justo.',prompt:'Reparte 15 frutos entre 3 tucanes.',total:15,groups:3,emoji:'🫐',group:'Tucán',animal:'Tucán',animalEmoji:'🦜',hint:'Tres grupos iguales. ¿Cuántos frutos llegan a cada uno?',reward:'15 ÷ 3 = 5.',fact:'El gran pico del tucán es ligero porque contiene una estructura interna parecida a una espuma ósea.'},
-    {w:0,type:'share',title:'La puerta de cuatro huellas',story:'Cuatro coatíes rodean la salida del bosque. Este es el último código del primer mundo.',prompt:'Reparte 16 frutos entre 4 coatíes.',total:16,groups:4,emoji:'🍇',group:'Coatí',animal:'Coatí',animalEmoji:'🐾',hint:'Reparte por rondas: uno para cada uno.',reward:'16 ÷ 4 = 4. ¡Primer mundo recuperado!',fact:'Los coatíes usan su hocico flexible para buscar alimento entre hojas y suelo.'},
+    // CAPÍTULO 1 — entender la división desde acciones diferentes
+    {
+      w:0,type:'share',challengeLabel:'REPARTIR',title:'El primer código',
+      story:'Dos geckos llegaron al campamento. El Atlas necesita que repartas su alimento sin dejar a ninguno atrás.',
+      prompt:'Reparte 6 insectos entre 2 geckos por partes iguales.',
+      total:6,groups:2,emoji:'🦗',group:'Gecko',animal:'Gecko',animalEmoji:'🦎',
+      hint:'Da un insecto a cada gecko por turnos.',reward:'6 ÷ 2 = 3.',
+      feedbackRule:'al dividir, repartimos una cantidad en grupos iguales',
+      feedbackAction:'Aquí tomaste 6 insectos y necesitabas dividirlos entre 2 geckos. Fuiste repartiendo hasta que cada gecko quedó con 3.',
+      teaser:'En la siguiente misión volverás a repartir, pero será la última vez seguida. Después el Atlas cambiará la forma del reto.',
+      fact:'Los geckos pueden trepar superficies gracias a estructuras microscópicas en sus dedos.'
+    },
+    {
+      w:0,type:'share',challengeLabel:'REPARTIR',title:'La merienda del panda rojo',
+      story:'Un puente de bambú solo se abrirá si los dos pandas reciben exactamente lo mismo.',
+      prompt:'Reparte 8 trozos de bambú entre 2 pandas rojos.',
+      total:8,groups:2,emoji:'🎋',group:'Panda',animal:'Panda rojo',animalEmoji:'🦝',
+      hint:'Alterna: uno aquí, uno allá, hasta terminar.',reward:'8 ÷ 2 = 4.',
+      feedbackRule:'al dividir, todos los grupos deben quedar con la misma cantidad',
+      feedbackAction:'Aquí tenías 8 trozos de bambú y necesitabas dividirlos entre 2 pandas. Al terminar, cada panda recibió 4 trozos.',
+      teaser:'Ahora cambia el juego: no vas a repartir nada. Tendrás que descubrir cuál reparto ya está bien hecho.',
+      fact:'El panda rojo pasa mucho tiempo en los árboles y usa su larga cola para mantener el equilibrio.'
+    },
+    {
+      w:0,type:'distributionChoice',challengeLabel:'ENCUENTRA EL REPARTO',title:'Ranas bajo la lluvia',
+      story:'Tres ranas de cristal encontraron tres repartos diferentes. Solo uno mantiene el equilibrio del bosque.',
+      prompt:'¿Cuál reparto representa 9 insectos divididos entre 3 ranas por partes iguales?',
+      total:9,groups:3,emoji:'🪰',group:'Rana',animal:'Rana de cristal',animalEmoji:'🐸',
+      options:[
+        {id:'A',groups:[4,3,2]},
+        {id:'B',groups:[3,3,3]},
+        {id:'C',groups:[2,4,3]}
+      ],correct:'B',hint:'Busca la opción donde las 3 ranas tengan exactamente la misma cantidad.',reward:'9 ÷ 3 = 3.',
+      feedbackRule:'al dividir, un reparto correcto deja todos los grupos iguales',
+      feedbackAction:'Aquí no tuviste que mover los 9 insectos. Reconociste que 3, 3 y 3 era el único reparto donde las 3 ranas quedaban iguales.',
+      teaser:'La próxima misión tendrá un grupo incompleto. Tu reto será descubrir qué le falta.',
+      fact:'Algunas ranas de cristal tienen la piel del vientre tan transparente que se pueden ver órganos internos.'
+    },
+    {
+      w:0,type:'completeGroup',challengeLabel:'COMPLETA EL GRUPO',title:'Hojas para los perezosos',
+      story:'Tres perezosos necesitan la misma cantidad de hojas. Dos grupos ya están completos, pero uno quedó a medias.',
+      prompt:'Dos perezosos tienen 4 hojas cada uno. El tercero tiene 2. ¿Cuántas hojas le faltan para quedar igual?',
+      total:12,groups:3,target:4,preview:[4,4,2],answers:[1,2,3],correct:2,emoji:'🍃',group:'Perezoso',animal:'Perezoso',animalEmoji:'🦥',
+      hint:'Mira los grupos que ya tienen 4. ¿Cuántas faltan para que 2 llegue a 4?',reward:'12 ÷ 3 = 4.',
+      feedbackRule:'al dividir, cada grupo debe alcanzar la misma cantidad',
+      feedbackAction:'Aquí viste que dos perezosos tenían 4 hojas y uno solo tenía 2. Descubriste que necesitaba 2 hojas más para que los 3 grupos quedaran en 4.',
+      teaser:'En la siguiente misión NOVA hará un reparto con un error. Tú tendrás que detectarlo.',
+      fact:'Los perezosos se mueven lentamente y gran parte de su vida transcurre en los árboles.'
+    },
+    {
+      w:0,type:'findError',challengeLabel:'DETECTA EL ERROR',title:'El desayuno de los tucanes',
+      story:'NOVA intentó repartir los frutos de los tucanes, pero el Atlas detectó que algo quedó desequilibrado.',
+      prompt:'Cada tucán debería tener 5 frutos. ¿Cuál tucán recibió 1 fruto de más?',
+      total:15,groups:3,target:5,preview:[5,6,4],correct:1,emoji:'🫐',group:'Tucán',animal:'Tucán',animalEmoji:'🦜',
+      hint:'Compara cada grupo con 5. Busca el que llegó a 6.',reward:'15 ÷ 3 = 5.',
+      feedbackRule:'al dividir, podemos comprobar el reparto comparando cada grupo con la cantidad que debería tener',
+      feedbackAction:'Aquí sabías que cada tucán debía tener 5 frutos. Detectaste que uno tenía 6, así que ese reparto todavía no estaba equilibrado.',
+      teaser:'El último reto del bosque será distinto: verás el total y los grupos, pero tendrás que descubrir cuánto corresponde a cada uno.',
+      fact:'El gran pico del tucán es ligero porque contiene una estructura interna parecida a una espuma ósea.'
+    },
+    {
+      w:0,type:'groupSize',challengeLabel:'DESCUBRE CUÁNTO TOCA',title:'La puerta de cuatro huellas',
+      story:'Cuatro coatíes rodean la salida del bosque. Esta vez el Atlas no quiere que muevas cada fruto uno por uno.',
+      prompt:'Hay 16 frutos y 4 coatíes. Si todos reciben lo mismo, ¿cuántos frutos le corresponden a cada uno?',
+      total:16,groups:4,answers:[3,4,5,6],correct:4,emoji:'🍇',group:'Coatí',animal:'Coatí',animalEmoji:'🐾',
+      hint:'Piensa en 4 grupos iguales que juntos formen 16.',reward:'16 ÷ 4 = 4. ¡Primer mundo recuperado!',
+      feedbackRule:'al dividir, el resultado nos dice cuánto le corresponde a cada grupo',
+      feedbackAction:'Aquí tenías 16 frutos y 4 coatíes. Sin mover cada fruto, descubriste que 4 para cada coatí forma exactamente los 16.',
+      teaser:'Bosque recuperado. En los Ríos Secretos empezarás a conectar los dibujos con el símbolo ÷.',
+      fact:'Los coatíes usan su hocico flexible para buscar alimento entre hojas y suelo.'
+    },
 
-    // CAPÍTULO 2 — agrupación y reparto
-    {w:1,type:'share',title:'Señal del ajolote',story:'Una luz aparece bajo el agua. Tres ajolotes protegen el siguiente fragmento del mapa.',prompt:'Reparte 12 camarones entre 3 ajolotes.',total:12,groups:3,emoji:'🦐',group:'Ajolote',animal:'Ajolote',animalEmoji:'🦎',hint:'Haz tres grupos iguales.',reward:'12 ÷ 3 = 4.',fact:'El ajolote puede regenerar partes de su cuerpo y conserva rasgos larvarios durante su vida.'},
-    {w:1,type:'share',title:'El ornitorrinco curioso',story:'Dos ornitorrincos encontraron unas conchas con números grabados.',prompt:'Reparte 10 pequeños bocados entre 2 ornitorrincos.',total:10,groups:2,emoji:'🪱',group:'Ornitorrinco',animal:'Ornitorrinco',animalEmoji:'🦆',hint:'Dos grupos iguales: reparte de uno en uno.',reward:'10 ÷ 2 = 5.',fact:'El ornitorrinco es un mamífero que pone huevos.'},
-    {w:1,type:'share',title:'Nutrias en equipo',story:'Cinco nutrias flotan juntas. Cada una necesita la misma cantidad para activar una boya del Atlas.',prompt:'Reparte 20 peces entre 5 nutrias.',total:20,groups:5,emoji:'🐟',group:'Nutria',animal:'Nutria marina',animalEmoji:'🦦',hint:'Cinco grupos. Haz una ronda completa y vuelve a empezar.',reward:'20 ÷ 5 = 4.',fact:'Las nutrias marinas pueden usar piedras como herramientas para abrir alimento con caparazón.'},
-    {w:1,type:'share',title:'Delfines rosados',story:'Tres delfines aparecen entre la niebla del río y señalan un código escondido.',prompt:'Reparte 18 peces entre 3 delfines.',total:18,groups:3,emoji:'🐟',group:'Delfín',animal:'Delfín rosado',animalEmoji:'🐬',hint:'Si haces 3 grupos iguales, todos deben terminar con la misma cantidad.',reward:'18 ÷ 3 = 6.',fact:'El delfín del Amazonas puede presentar tonos rosados y vive en sistemas de agua dulce sudamericanos.'},
-    {w:1,type:'equation',title:'La piedra del capibara',story:'El capibara encontró una piedra con el primer código escrito solo con números.',prompt:'Elige el resultado correcto para abrir el paso.',equation:[24,6,4],answers:[3,4,5,6],animal:'Capibara',animalEmoji:'🦫',hint:'Piensa: 6 × ¿qué número? = 24.',reward:'24 ÷ 6 = 4.',fact:'El capibara es el roedor vivo más grande del mundo y está muy adaptado a la vida cerca del agua.'},
-    {w:1,type:'equation',title:'La compuerta del manatí',story:'Una enorme compuerta bloquea el río. El manatí espera detrás del cristal azul.',prompt:'Resuelve el código para abrir la compuerta.',equation:[28,4,7],answers:[5,6,7,8],animal:'Manatí',animalEmoji:'🦭',hint:'Busca qué número por 4 da 28.',reward:'28 ÷ 4 = 7. ¡Los Ríos Secretos están conectados!',fact:'Los manatíes son mamíferos acuáticos herbívoros y pasan gran parte del día alimentándose.'},
+    // CAPÍTULO 2 — conectar representaciones, corregir y pasar a números
+    {
+      w:1,type:'representationChoice',challengeLabel:'UNE DIBUJO Y DIVISIÓN',title:'Señal del ajolote',
+      story:'Una luz aparece bajo el agua. El ajolote encontró el símbolo 12 ÷ 3, pero necesita saber qué dibujo representa esa idea.',
+      prompt:'¿Cuál dibujo representa 12 dividido entre 3 grupos iguales?',
+      total:12,groups:3,equation:[12,3,4],emoji:'🦐',animal:'Ajolote',animalEmoji:'🦎',
+      options:[
+        {id:'A',groups:[4,4,4]},
+        {id:'B',groups:[3,3,3]},
+        {id:'C',groups:[5,4,3]}
+      ],correct:'A',hint:'12 ÷ 3 significa formar 3 grupos iguales usando los 12 objetos.',reward:'12 ÷ 3 = 4.',
+      feedbackRule:'al dividir, el símbolo ÷ representa el mismo reparto en grupos iguales que ya aprendiste a hacer',
+      feedbackAction:'Aquí viste 12 ÷ 3 y elegiste el dibujo con 3 grupos de 4. El dibujo y la operación estaban contando exactamente la misma historia.',
+      teaser:'Ahora el Atlas hará la pregunta al revés: ya conocerás cuánto quedó en cada grupo y deberás descubrir el total.',
+      fact:'El ajolote puede regenerar partes de su cuerpo y conserva rasgos larvarios durante su vida.'
+    },
+    {
+      w:1,type:'reverseTotal',challengeLabel:'PIENSA AL REVÉS',title:'El ornitorrinco curioso',
+      story:'Dos ornitorrincos ya terminaron de repartir su alimento. El Atlas borró el número que decía cuántos bocados había al inicio.',
+      prompt:'Hay 2 ornitorrincos y cada uno terminó con 5 bocados. ¿Cuántos bocados había antes de repartir?',
+      groups:2,each:5,answers:[8,10,12],correct:10,emoji:'🪱',group:'Ornitorrinco',animal:'Ornitorrinco',animalEmoji:'🦆',
+      hint:'Junta los dos grupos de 5: 5 + 5.',reward:'10 ÷ 2 = 5.',
+      feedbackRule:'al dividir, también puedes comprobar la respuesta juntando otra vez los grupos',
+      feedbackAction:'Aquí viste 2 grupos de 5 y descubriste que juntos forman 10. Eso confirma que si 10 se divide entre 2, a cada grupo le corresponden 5.',
+      teaser:'La siguiente misión tendrá un reparto casi correcto. Solo tendrás que hacer un movimiento para equilibrarlo.',
+      fact:'El ornitorrinco es un mamífero que pone huevos.'
+    },
+    {
+      w:1,type:'balance',challengeLabel:'EQUILIBRA EL REPARTO',title:'Nutrias en equipo',
+      story:'Cinco nutrias recibieron peces, pero una ola movió uno de lugar. El reparto quedó 4, 4, 3, 4 y 5.',
+      prompt:'¿Qué movimiento deja a las 5 nutrias con 4 peces cada una?',
+      total:20,groups:5,target:4,preview:[4,4,3,4,5],emoji:'🐟',group:'Nutria',animal:'Nutria marina',animalEmoji:'🦦',
+      actions:[
+        {id:'A',label:'Mover 1 pez de la nutria 5 a la nutria 3'},
+        {id:'B',label:'Mover 1 pez de la nutria 1 a la nutria 2'},
+        {id:'C',label:'Dar 1 pez más a la nutria 5'}
+      ],correct:'A',hint:'Busca una nutria que tenga 1 de más y otra que tenga 1 de menos.',reward:'20 ÷ 5 = 4.',
+      feedbackRule:'al dividir, puedes corregir un reparto hasta que todos los grupos tengan la misma cantidad',
+      feedbackAction:'Aquí el reparto casi estaba listo: una nutria tenía 5 y otra 3. Moviste 1 pez de la que tenía de más a la que tenía de menos y todas quedaron con 4.',
+      teaser:'Ahora aparecerá una historia. Tendrás que descubrir qué división se esconde dentro de ella.',
+      fact:'Las nutrias marinas pueden usar piedras como herramientas para abrir alimento con caparazón.'
+    },
+    {
+      w:1,type:'storyChoice',challengeLabel:'RESUELVE EL MISTERIO',title:'Delfines rosados',
+      story:'Tres delfines rosados encontraron 18 peces y entraron en tres túneles distintos. Para abrir el paso, cada túnel debe recibir la misma cantidad.',
+      prompt:'Si los 18 peces se reparten entre 3 delfines por igual, ¿cuántos recibe cada uno?',
+      total:18,groups:3,answers:[5,6,7,9],correct:6,emoji:'🐟',group:'Delfín',animal:'Delfín rosado',animalEmoji:'🐬',
+      hint:'La historia dice 18 en total y 3 grupos iguales. Eso es 18 ÷ 3.',reward:'18 ÷ 3 = 6.',
+      feedbackRule:'al dividir, una historia puede esconder el total y la cantidad de grupos',
+      feedbackAction:'Aquí la historia te dio 18 peces y 3 delfines. Reconociste que debías repartir 18 entre 3 y descubriste que a cada uno le correspondían 6.',
+      teaser:'El siguiente código aparecerá casi sin dibujos. Vas a usar todo lo que ya entendiste para resolverlo con números.',
+      fact:'El delfín del Amazonas puede presentar tonos rosados y vive en sistemas de agua dulce sudamericanos.'
+    },
+    {
+      w:1,type:'equation',challengeLabel:'CÓDIGO NUMÉRICO',title:'La piedra del capibara',
+      story:'El capibara encontró una piedra con un código escrito solo con números. Ya no hay que mover todos los objetos para entenderlo.',
+      prompt:'Elige el resultado correcto para abrir el paso.',equation:[24,6,4],answers:[3,4,5,6],animal:'Capibara',animalEmoji:'🦫',
+      hint:'Imagina 24 objetos repartidos en 6 grupos iguales. También puedes pensar: 6 × ¿qué número? = 24.',reward:'24 ÷ 6 = 4.',
+      feedbackRule:'al dividir, puedes usar la idea de grupos iguales aunque ya no veas todos los objetos',
+      feedbackAction:'Aquí resolviste 24 ÷ 6 usando números. La lógica seguía siendo la misma: 24 repartido en 6 grupos deja 4 en cada grupo.',
+      teaser:'Se acerca el Guardián del Río. La última misión mezclará dibujos, símbolo ÷ y resultado en un solo desafío.',
+      fact:'El capibara es el roedor vivo más grande del mundo y está muy adaptado a la vida cerca del agua.'
+    },
+    {
+      w:1,type:'boss',challengeLabel:'GUARDIÁN DEL MUNDO',title:'La compuerta del manatí',
+      story:'Una enorme compuerta bloquea el río. El manatí activó tres cerraduras: reparto, operación y resultado. Emiliano debe conectar las tres.',
+      prompt:'Supera las 3 cerraduras del Guardián del Río.',equation:[28,4,7],total:28,groups:4,animal:'Manatí',animalEmoji:'🦭',
+      boss:{
+        distributions:[
+          {id:'A',groups:[8,7,7,6]},
+          {id:'B',groups:[7,7,7,7]},
+          {id:'C',groups:[6,8,7,7]}
+        ],
+        operations:[
+          {id:'A',label:'28 ÷ 4'},
+          {id:'B',label:'28 × 4'},
+          {id:'C',label:'28 − 4'}
+        ],
+        results:[5,6,7,8],
+        correct:{distribution:'B',operation:'A',result:7}
+      },
+      hint:'Primero busca 4 grupos iguales. Después elige la operación que significa repartir 28 entre 4.',reward:'28 ÷ 4 = 7. ¡Los Ríos Secretos están conectados!',
+      feedbackRule:'al dividir, la situación, los grupos, el símbolo ÷ y el resultado representan la misma idea',
+      feedbackAction:'Aquí conectaste tres cosas: 28 objetos en 4 grupos iguales, la operación 28 ÷ 4 y el resultado 7. Las tres formas describen el mismo reparto.',
+      teaser:'Ríos Secretos recuperados. El Océano Profundo te espera con códigos nuevos y criaturas cada vez más extrañas.',
+      fact:'Los manatíes son mamíferos acuáticos herbívoros y pasan gran parte del día alimentándose.'
+    },
 
     // CAPÍTULO 3 — símbolo división y tablas 2-6
     {w:2,type:'equation',title:'Luces en la oscuridad',story:'El submarino desciende. Un pulpo Dumbo aparece donde casi no llega la luz.',prompt:'Descifra 14 ÷ 2.',equation:[14,2,7],answers:[5,6,7,8],animal:'Pulpo Dumbo',animalEmoji:'🐙',hint:'La mitad de 14 es...',reward:'14 ÷ 2 = 7.',fact:'Los pulpos Dumbo viven a grandes profundidades y reciben su apodo por sus aletas parecidas a orejas.'},
@@ -179,10 +328,13 @@
   let selectedAnswer = null;
   let attemptCount = 0;
   let tutorRequestId = 0;
+  let feedbackRequestId = 0;
   let tutorHistory = [];
   let tutorBusy = false;
   let currentMissionCompleted = false;
   let gameCompleted = Boolean(savedGame?.gameCompleted);
+  let mechanicState = {};
+  let currentFeedback = '';
 
   function collectShareState() {
     const bank = $('#bank');
@@ -196,17 +348,19 @@
 
   function saveGameState() {
     const state = {
-      version: 2,
+      version: 3,
       mission,
       unlocked: unlockedCount(),
       soundOn,
       introSeen: localStorage.getItem('emilianoIntroSeen') === 'yes',
       selectedAnswer,
+      mechanicState,
       attemptCount,
-      tutorHistory: tutorHistory.slice(-10),
+      tutorHistory: tutorHistory.slice(-12),
       tutorOpen: !aiTutorCard.hidden,
       shareState: missions[mission]?.type === 'share' ? collectShareState() : null,
       currentMissionCompleted,
+      currentFeedback,
       gameCompleted,
       savedAt: Date.now()
     };
@@ -221,9 +375,11 @@
   function clearCurrentMissionState() {
     selectedCreature = null;
     selectedAnswer = null;
+    mechanicState = {};
     attemptCount = 0;
     tutorHistory = [];
     currentMissionCompleted = false;
+    currentFeedback = '';
     gameCompleted = false;
   }
 
@@ -386,16 +542,22 @@
     updateZoneCounts();
   }
 
-  function restoreEquationState(saved) {
-    if (saved?.selectedAnswer === null || saved?.selectedAnswer === undefined) return;
-    selectedAnswer = Number(saved.selectedAnswer);
-    [...document.querySelectorAll('.answer-btn')].forEach(btn => {
-      btn.classList.toggle('selected', Number(btn.textContent) === selectedAnswer);
+  function restoreGenericState(saved) {
+    mechanicState = saved?.mechanicState && typeof saved.mechanicState === 'object' ? saved.mechanicState : {};
+    selectedAnswer = saved?.selectedAnswer ?? null;
+
+    document.querySelectorAll('[data-select-answer]').forEach(btn => {
+      btn.classList.toggle('selected', String(btn.dataset.selectAnswer) === String(selectedAnswer));
+    });
+
+    document.querySelectorAll('[data-boss-kind]').forEach(btn => {
+      const kind = btn.dataset.bossKind;
+      btn.classList.toggle('selected', String(btn.dataset.bossValue) === String(mechanicState?.[kind] ?? ''));
     });
   }
 
   function restoreTutorState(saved) {
-    tutorHistory = Array.isArray(saved?.tutorHistory) ? saved.tutorHistory.slice(-10) : [];
+    tutorHistory = Array.isArray(saved?.tutorHistory) ? saved.tutorHistory.slice(-12) : [];
     resetTutorChat();
     tutorHistory.forEach(item => {
       if (item?.role === 'user' || item?.role === 'assistant') {
@@ -405,7 +567,47 @@
     aiTutorCard.hidden = !(saved?.tutorOpen && tutorHistory.length);
   }
 
-  function showSavedReward() {
+  function equationForMission(m) {
+    if (Array.isArray(m.equation) && m.equation.length >= 3) return m.equation.slice(0, 3);
+    if (Number.isFinite(m.total) && Number.isFinite(m.groups) && m.groups !== 0) {
+      return [m.total, m.groups, m.total / m.groups];
+    }
+    if (Number.isFinite(m.groups) && Number.isFinite(m.each)) {
+      return [m.groups * m.each, m.groups, m.each];
+    }
+    return null;
+  }
+
+  function fallbackMissionFeedback(m) {
+    const eq = equationForMission(m);
+    if (m.feedbackRule && m.feedbackAction) {
+      const ending = eq ? ` Por eso, ${eq[0]} ÷ ${eq[1]} = ${eq[2]}.` : '';
+      return `Recuerda que ${m.feedbackRule}. ${m.feedbackAction}${ending}`;
+    }
+    if (eq) {
+      return `Recuerda que al dividir, buscamos cuánto corresponde a cada grupo cuando todos deben quedar iguales. Aquí resolviste ${eq[0]} ÷ ${eq[1]} y descubriste que quedan ${eq[2]} en cada grupo. Por eso, ${eq[0]} ÷ ${eq[1]} = ${eq[2]}.`;
+    }
+    return 'Recuerda que al dividir, necesitamos organizar una cantidad en grupos iguales y comprobar que todos queden equilibrados.';
+  }
+
+  function showMissionFeedback(text, { loading = false, status = 'IDEA CLAVE' } = {}) {
+    novaFeedbackCard.classList.toggle('loading', loading);
+    novaFeedbackStatus.textContent = status;
+    novaFeedbackText.textContent = text;
+  }
+
+  function showNextTeaser(m) {
+    const next = missions[mission + 1];
+    if (!next) {
+      nextTeaser.hidden = true;
+      return;
+    }
+    nextTeaser.hidden = false;
+    const teaser = m.teaser || `La siguiente misión es “${next.title}” con ${next.animal}.`;
+    nextTeaser.innerHTML = `<span>LO QUE VIENE</span>${teaser}`;
+  }
+
+  function showSavedReward(saved = null) {
     const m = missions[mission];
     rewardCard.hidden = false;
     rewardEmoji.innerHTML = animalVisualMarkup(m, 'reward-art');
@@ -413,8 +615,12 @@
     rewardText.textContent = m.reward;
     animalFact.textContent = m.fact;
     fillRewardProfile(m);
-    checkBtn.textContent = mission === missions.length - 1 ? 'Completar el Atlas' : 'Siguiente misión';
-    checkBtn.dataset.next = 'true';
+    currentFeedback = saved?.currentFeedback || currentFeedback || fallbackMissionFeedback(m);
+    showMissionFeedback(currentFeedback, { status: 'RECUERDA ESTO' });
+    showNextTeaser(m);
+    rewardNextBtn.textContent = mission === missions.length - 1 ? 'Completar el Atlas →' : 'Descubrir siguiente misión →';
+    checkBtn.hidden = true;
+    hintBtn.hidden = true;
     setProgress(1);
   }
 
@@ -423,8 +629,10 @@
     const sameMission = saved && Number(saved.mission) === mission;
     selectedCreature = null;
     selectedAnswer = sameMission ? (saved.selectedAnswer ?? null) : null;
+    mechanicState = sameMission && saved?.mechanicState ? saved.mechanicState : {};
     attemptCount = sameMission ? Number(saved.attemptCount || 0) : 0;
     currentMissionCompleted = Boolean(sameMission && saved.currentMissionCompleted);
+    currentFeedback = sameMission ? String(saved.currentFeedback || '') : '';
     aiTutorCard.hidden = true;
     tutorHistory = [];
     resetTutorChat();
@@ -448,14 +656,13 @@
     animalCardBtn.setAttribute('aria-label', `Conocer a ${m.animal}`);
     setProgress();
 
-    if (m.type === 'equation') renderEquation(m);
-    else renderSharing(m);
+    renderChallenge(m);
 
     if (sameMission) {
-      if (m.type === 'equation') restoreEquationState(saved);
-      else restoreSharingState(saved);
+      if (m.type === 'share') restoreSharingState(saved);
+      else restoreGenericState(saved);
       restoreTutorState(saved);
-      if (currentMissionCompleted) showSavedReward();
+      if (currentMissionCompleted) showSavedReward(saved);
       if (saved.gameCompleted && mission === missions.length - 1) {
         gameCompleted = true;
         completeGame(false);
@@ -483,7 +690,7 @@
   }
 
   function renderSharing(m) {
-    gameArea.innerHTML = '<p class="instruction">Toca un objeto y luego toca el animal que debe recibirlo.</p>';
+    gameArea.innerHTML = `${renderMechanicIntro(m)}<p class="instruction">Toca un objeto y luego toca el animal que debe recibirlo.</p>`;
     const bankWrap = document.createElement('div');
     bankWrap.className = 'bank-wrap';
     bankWrap.innerHTML = '<span class="bank-label">Objetos por repartir</span>';
@@ -530,10 +737,35 @@
     });
   }
 
+  function selectSingle(container, button, value) {
+    playTap();
+    container.querySelectorAll('[data-select-answer]').forEach(x => x.classList.remove('selected'));
+    button.classList.add('selected');
+    selectedAnswer = value;
+    saveGameState();
+  }
+
+  function itemsMarkup(count, emoji) {
+    return Array.from({ length: Math.max(0, Number(count) || 0) }, () => `<span>${emoji}</span>`).join('');
+  }
+
+  function miniGroupsMarkup(counts, m) {
+    return `<div class="mini-groups" style="--mini-count:${Math.min(counts.length, 5)}">${counts.map((count, i) => `
+      <div class="mini-group">
+        <span class="mini-animal">${m.animalEmoji}</span>
+        <div class="mini-items">${itemsMarkup(count, m.emoji || '●')}</div>
+        <span class="mini-count">${count}</span>
+      </div>`).join('')}</div>`;
+  }
+
+  function renderMechanicIntro(m, question = m.prompt) {
+    return `<div class="mechanic-kicker">⚡ ${m.challengeLabel || 'DESAFÍO DEL ATLAS'}</div><p class="mechanic-question">${question}</p>`;
+  }
+
   function renderEquation(m) {
     const [a,b] = m.equation;
     gameArea.innerHTML = `
-      <p class="instruction">Elige el número que completa el código.</p>
+      ${renderMechanicIntro(m, 'Elige el número que completa el código.')}
       <div class="code-console">
         <span class="console-dot"></span><span class="console-dot"></span><span class="console-dot"></span>
         <small>CÓDIGO DEL ATLAS</small>
@@ -548,15 +780,215 @@
       bttn.type = 'button';
       bttn.className = 'answer-btn';
       bttn.textContent = n;
-      bttn.addEventListener('click', () => {
-        playTap();
-        grid.querySelectorAll('.answer-btn').forEach(x => x.classList.remove('selected'));
-        bttn.classList.add('selected');
-        selectedAnswer = n;
-        saveGameState();
-      });
+      bttn.dataset.selectAnswer = String(n);
+      bttn.addEventListener('click', () => selectSingle(grid, bttn, n));
       grid.appendChild(bttn);
     });
+  }
+
+  function renderDistributionChoice(m, showEquation = false) {
+    const equation = showEquation && m.equation
+      ? `<div class="code-console" style="margin-bottom:12px"><small>CÓDIGO</small><div class="equation" style="font-size:2rem;margin:8px 0"><span>${m.equation[0]}</span><span class="operator">÷</span><span>${m.equation[1]}</span></div></div>`
+      : '';
+    gameArea.innerHTML = `${renderMechanicIntro(m)}${equation}<div class="choice-stack"></div>`;
+    const stack = gameArea.querySelector('.choice-stack');
+    m.options.forEach(option => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'visual-choice';
+      btn.dataset.selectAnswer = option.id;
+      btn.innerHTML = `<strong>OPCIÓN ${option.id}</strong>${miniGroupsMarkup(option.groups, m)}`;
+      btn.addEventListener('click', () => selectSingle(stack, btn, option.id));
+      stack.appendChild(btn);
+    });
+  }
+
+  function renderCompleteGroup(m) {
+    gameArea.innerHTML = `
+      ${renderMechanicIntro(m)}
+      ${miniGroupsMarkup(m.preview, m)}
+      <p class="instruction" style="margin-top:14px">¿Cuántas ${m.emoji} faltan en el último grupo?</p>
+      <div class="number-choice-grid"></div>`;
+    const grid = gameArea.querySelector('.number-choice-grid');
+    m.answers.forEach(n => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'number-choice';
+      btn.dataset.selectAnswer = String(n);
+      btn.textContent = n;
+      btn.addEventListener('click', () => selectSingle(grid, btn, n));
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderFindError(m) {
+    gameArea.innerHTML = `${renderMechanicIntro(m)}<div class="error-groups"></div>`;
+    const grid = gameArea.querySelector('.error-groups');
+    m.preview.forEach((count, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'error-group';
+      btn.dataset.selectAnswer = String(i);
+      btn.innerHTML = `<span class="animal">${m.animalEmoji}</span><strong>${m.group} ${i + 1}</strong><div class="mini-items">${itemsMarkup(count, m.emoji)}</div><span class="mini-count">${count} frutos</span>`;
+      btn.addEventListener('click', () => selectSingle(grid, btn, i));
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderGroupSize(m) {
+    gameArea.innerHTML = `
+      ${renderMechanicIntro(m)}
+      <div class="scene-total"><span class="scene-total-label">TOTAL: ${m.total}</span><div class="scene-items">${itemsMarkup(m.total, m.emoji)}</div></div>
+      <div class="scene-animals" style="--animal-count:${m.groups}">${Array.from({length:m.groups},(_,i)=>`<div class="scene-animal"><span>${m.animalEmoji}</span><small>${m.group} ${i+1}</small></div>`).join('')}</div>
+      <div class="number-choice-grid four"></div>`;
+    const grid = gameArea.querySelector('.number-choice-grid');
+    m.answers.forEach(n => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'number-choice';
+      btn.dataset.selectAnswer = String(n);
+      btn.textContent = n;
+      btn.addEventListener('click', () => selectSingle(grid, btn, n));
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderReverseTotal(m) {
+    const counts = Array.from({length:m.groups},()=>m.each);
+    gameArea.innerHTML = `
+      ${renderMechanicIntro(m)}
+      ${miniGroupsMarkup(counts, m)}
+      <p class="instruction" style="margin-top:14px">Junta mentalmente los grupos. ¿Cuál era el total?</p>
+      <div class="number-choice-grid"></div>`;
+    const grid = gameArea.querySelector('.number-choice-grid');
+    m.answers.forEach(n => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'number-choice';
+      btn.dataset.selectAnswer = String(n);
+      btn.textContent = n;
+      btn.addEventListener('click', () => selectSingle(grid, btn, n));
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderBalance(m) {
+    gameArea.innerHTML = `
+      ${renderMechanicIntro(m)}
+      <div class="balance-board">
+        <div class="balance-current">${miniGroupsMarkup(m.preview, m)}</div>
+        <div class="balance-actions"></div>
+      </div>`;
+    const actions = gameArea.querySelector('.balance-actions');
+    m.actions.forEach(action => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'balance-action';
+      btn.dataset.selectAnswer = action.id;
+      btn.textContent = action.label;
+      btn.addEventListener('click', () => selectSingle(actions, btn, action.id));
+      actions.appendChild(btn);
+    });
+  }
+
+  function renderStoryChoice(m) {
+    gameArea.innerHTML = `
+      ${renderMechanicIntro(m)}
+      <div class="story-problem"><div class="story-icon">${m.animalEmoji}</div><p>${m.story}</p></div>
+      <div class="number-choice-grid four"></div>`;
+    const grid = gameArea.querySelector('.number-choice-grid');
+    m.answers.forEach(n => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'number-choice';
+      btn.dataset.selectAnswer = String(n);
+      btn.textContent = n;
+      btn.addEventListener('click', () => selectSingle(grid, btn, n));
+      grid.appendChild(btn);
+    });
+  }
+
+  function renderBoss(m) {
+    mechanicState = mechanicState && typeof mechanicState === 'object' ? mechanicState : {};
+    gameArea.innerHTML = `
+      ${renderMechanicIntro(m)}
+      <div class="boss-card">
+        <div class="boss-head"><span>${m.animalEmoji}</span><div><small>GUARDIÁN DEL RÍO</small><strong>Abre las 3 cerraduras</strong></div></div>
+        <div class="boss-round" data-round="distribution"><span>CERRADURA 1 · REPARTO</span><div class="choice-stack boss-distributions"></div></div>
+        <div class="boss-round" data-round="operation"><span>CERRADURA 2 · OPERACIÓN</span><div class="boss-option-grid boss-operations"></div></div>
+        <div class="boss-round" data-round="result"><span>CERRADURA 3 · RESULTADO</span><div class="boss-option-grid boss-results"></div></div>
+      </div>`;
+
+    const dist = gameArea.querySelector('.boss-distributions');
+    m.boss.distributions.forEach(option => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'visual-choice';
+      btn.dataset.bossKind = 'distribution';
+      btn.dataset.bossValue = option.id;
+      btn.innerHTML = `<strong>OPCIÓN ${option.id}</strong>${miniGroupsMarkup(option.groups, {...m, emoji:'🐟'})}`;
+      btn.addEventListener('click', () => {
+        playTap();
+        dist.querySelectorAll('[data-boss-kind="distribution"]').forEach(x=>x.classList.remove('selected'));
+        btn.classList.add('selected');
+        mechanicState.distribution = option.id;
+        saveGameState();
+      });
+      dist.appendChild(btn);
+    });
+
+    const ops = gameArea.querySelector('.boss-operations');
+    m.boss.operations.forEach(option => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'boss-option';
+      btn.dataset.bossKind = 'operation';
+      btn.dataset.bossValue = option.id;
+      btn.textContent = option.label;
+      btn.addEventListener('click', () => {
+        playTap();
+        ops.querySelectorAll('.boss-option').forEach(x=>x.classList.remove('selected'));
+        btn.classList.add('selected');
+        mechanicState.operation = option.id;
+        saveGameState();
+      });
+      ops.appendChild(btn);
+    });
+
+    const results = gameArea.querySelector('.boss-results');
+    m.boss.results.forEach(value => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'boss-option';
+      btn.dataset.bossKind = 'result';
+      btn.dataset.bossValue = String(value);
+      btn.textContent = value;
+      btn.addEventListener('click', () => {
+        playTap();
+        results.querySelectorAll('.boss-option').forEach(x=>x.classList.remove('selected'));
+        btn.classList.add('selected');
+        mechanicState.result = value;
+        saveGameState();
+      });
+      results.appendChild(btn);
+    });
+  }
+
+  function renderChallenge(m) {
+    switch (m.type) {
+      case 'share': return renderSharing(m);
+      case 'distributionChoice': return renderDistributionChoice(m, false);
+      case 'representationChoice': return renderDistributionChoice(m, true);
+      case 'completeGroup': return renderCompleteGroup(m);
+      case 'findError': return renderFindError(m);
+      case 'groupSize': return renderGroupSize(m);
+      case 'reverseTotal': return renderReverseTotal(m);
+      case 'balance': return renderBalance(m);
+      case 'storyChoice': return renderStoryChoice(m);
+      case 'boss': return renderBoss(m);
+      case 'equation':
+      default: return renderEquation(m);
+    }
   }
 
   function isSharingCorrect(m) {
@@ -567,18 +999,35 @@
     return bank && bank.children.length === 0 && counts.every(c => c === target);
   }
 
+  function isMissionCorrect(m) {
+    if (m.type === 'share') return isSharingCorrect(m);
+    if (m.type === 'boss') {
+      return String(mechanicState.distribution) === String(m.boss.correct.distribution)
+        && String(mechanicState.operation) === String(m.boss.correct.operation)
+        && Number(mechanicState.result) === Number(m.boss.correct.result);
+    }
+    if (m.type === 'equation') return Number(selectedAnswer) === Number(m.equation[2]);
+    return String(selectedAnswer) === String(m.correct);
+  }
+
+  function hasMissionAnswer(m) {
+    if (m.type === 'share') return true;
+    if (m.type === 'boss') return mechanicState.distribution != null && mechanicState.operation != null && mechanicState.result != null;
+    return selectedAnswer !== null && selectedAnswer !== undefined;
+  }
 
   function getAttemptSummary(m) {
-    if (m.type === 'equation') {
-      return selectedAnswer === null
-        ? 'Todavía no ha elegido una respuesta.'
-        : `Eligió ${selectedAnswer} como respuesta.`;
+    if (m.type === 'share') {
+      const bank = $('#bank');
+      const counts = [...document.querySelectorAll('.zone-items')].map(z => z.children.length);
+      const remaining = bank ? bank.children.length : m.total;
+      return `Repartió los objetos así: [${counts.join(', ')}]. Quedan ${remaining} objetos sin repartir.`;
     }
-
-    const bank = $('#bank');
-    const counts = [...document.querySelectorAll('.zone-items')].map(z => z.children.length);
-    const remaining = bank ? bank.children.length : m.total;
-    return `Repartió los objetos así: [${counts.join(', ')}]. Quedan ${remaining} objetos sin repartir.`;
+    if (m.type === 'boss') {
+      return `En el guardián eligió reparto ${mechanicState.distribution ?? 'sin elegir'}, operación ${mechanicState.operation ?? 'sin elegir'} y resultado ${mechanicState.result ?? 'sin elegir'}.`;
+    }
+    if (selectedAnswer === null || selectedAnswer === undefined) return 'Todavía no ha elegido una respuesta.';
+    return `Eligió ${selectedAnswer} en un reto de tipo ${m.challengeLabel || m.type}.`;
   }
 
   function resetTutorChat() {
@@ -634,19 +1083,22 @@
     aiStatus.className = 'ai-status loading';
     setTutorBusy(true);
 
+    const eq = equationForMission(m);
     const payload = {
+      mode: 'chat',
       reason,
       question: userQuestion,
       history: previousHistory,
       missionNumber: mission + 1,
       missionTitle: m.title,
+      challengeLabel: m.challengeLabel || '',
       animal: m.animal,
       story: m.story,
       prompt: m.prompt,
       hint: m.hint,
       type: m.type,
-      equation: m.type === 'equation' ? { dividend: m.equation[0], divisor: m.equation[1], quotient: m.equation[2] } : null,
-      sharing: m.type === 'share' ? { total: m.total, groups: m.groups, quotient: m.total / m.groups } : null,
+      equation: eq ? { dividend: eq[0], divisor: eq[1], quotient: eq[2] } : null,
+      sharing: Number.isFinite(m.total) && Number.isFinite(m.groups) ? { total: m.total, groups: m.groups, quotient: m.total / m.groups } : null,
       attempt: getAttemptSummary(m),
       attemptCount
     };
@@ -687,11 +1139,64 @@
     }
   }
 
+  async function requestMissionFeedback(m) {
+    const requestId = ++feedbackRequestId;
+    const fallback = fallbackMissionFeedback(m);
+    currentFeedback = fallback;
+    showMissionFeedback(fallback, { loading: true, status: 'CONECTANDO LA IDEA...' });
+    saveGameState();
+
+    const eq = equationForMission(m);
+    const learnedBefore = missions
+      .slice(Math.max(0, mission - 3), mission)
+      .map(x => x.feedbackRule)
+      .filter(Boolean);
+
+    const payload = {
+      mode: 'feedback',
+      missionNumber: mission + 1,
+      missionTitle: m.title,
+      challengeLabel: m.challengeLabel || '',
+      animal: m.animal,
+      story: m.story,
+      prompt: m.prompt,
+      type: m.type,
+      equation: eq ? { dividend: eq[0], divisor: eq[1], quotient: eq[2] } : null,
+      sharing: Number.isFinite(m.total) && Number.isFinite(m.groups)
+        ? { total: m.total, groups: m.groups, quotient: m.total / m.groups }
+        : null,
+      feedbackRule: m.feedbackRule || 'al dividir, buscamos cuánto corresponde a cada grupo cuando todos deben quedar iguales',
+      feedbackAction: m.feedbackAction || (eq ? `Aquí resolviste ${eq[0]} ÷ ${eq[1]} y descubriste que cada grupo queda con ${eq[2]}.` : 'Aquí organizaste la cantidad de la misión en grupos iguales.'),
+      learnedBefore
+    };
+
+    try {
+      const res = await fetch('/api/tutor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'No fue posible generar el feedback.');
+      if (requestId !== feedbackRequestId || !currentMissionCompleted) return;
+
+      currentFeedback = data.message || fallback;
+      showMissionFeedback(currentFeedback, { status: 'RECUERDA ESTO' });
+      saveGameState();
+    } catch {
+      if (requestId !== feedbackRequestId || !currentMissionCompleted) return;
+      currentFeedback = fallback;
+      showMissionFeedback(currentFeedback, { status: 'RECUERDA ESTO' });
+      saveGameState();
+    }
+  }
+
   function success() {
     playSuccess();
     gameArea.classList.remove('shake');
     gameArea.classList.add('celebrate');
     setTimeout(() => gameArea.classList.remove('celebrate'), 600);
+
     const m = missions[mission];
     rewardCard.hidden = false;
     rewardEmoji.innerHTML = animalVisualMarkup(m, 'reward-art');
@@ -699,13 +1204,21 @@
     rewardText.textContent = m.reward;
     animalFact.textContent = m.fact;
     fillRewardProfile(m);
+    showNextTeaser(m);
+
     localStorage.setItem('emilianoUnlocked', String(Math.max(unlockedCount(), mission + 1)));
     currentMissionCompleted = true;
     gameCompleted = false;
     setProgress(1);
-    checkBtn.textContent = mission === missions.length - 1 ? 'Completar el Atlas' : 'Siguiente misión';
-    checkBtn.dataset.next = 'true';
+
+    checkBtn.hidden = true;
+    hintBtn.hidden = true;
+    rewardNextBtn.textContent = mission === missions.length - 1 ? 'Completar el Atlas →' : 'Descubrir siguiente misión →';
+
+    currentFeedback = fallbackMissionFeedback(m);
+    showMissionFeedback(currentFeedback, { loading: true, status: 'CONECTANDO LA IDEA...' });
     saveGameState();
+    requestMissionFeedback(m);
     rewardCard.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
@@ -752,27 +1265,32 @@
     });
   }
 
+  function advanceMission() {
+    if (mission === missions.length - 1) {
+      completeGame();
+      return;
+    }
+    mission += 1;
+    clearCurrentMissionState();
+    localStorage.setItem('emilianoMission', String(mission));
+    saveGameState();
+    renderMission({ restore: false });
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    playTap();
+  }
+
   checkBtn.addEventListener('click', () => {
-    if (checkBtn.dataset.next === 'true') {
-      if (mission === missions.length - 1) { completeGame(); return; }
-      mission += 1;
-      clearCurrentMissionState();
-      localStorage.setItem('emilianoMission', String(mission));
-      saveGameState();
-      renderMission({ restore: false });
-      window.scrollTo({top: 0, behavior: 'smooth'});
-      playTap();
+    const m = missions[mission];
+
+    if (!hasMissionAnswer(m)) {
+      showToast(m.type === 'boss' ? 'Completa las 3 cerraduras antes de comprobar 👆' : 'Primero elige una respuesta 👆');
       return;
     }
 
-    const m = missions[mission];
-    if (m.type === 'equation') {
-      if (selectedAnswer === null) { showToast('Primero elige una respuesta 👆'); return; }
-      selectedAnswer === m.equation[2] ? success() : incorrect(m);
-    } else {
-      isSharingCorrect(m) ? success() : incorrect(m);
-    }
+    isMissionCorrect(m) ? success() : incorrect(m);
   });
+
+  rewardNextBtn.addEventListener('click', advanceMission);
 
   hintBtn.addEventListener('click', () => {
     playTap();

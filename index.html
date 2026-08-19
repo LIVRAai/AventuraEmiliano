@@ -122,6 +122,20 @@
         <p class="eyebrow">CRIATURA DESBLOQUEADA</p>
         <h3 id="rewardTitle">¡Código recuperado!</h3>
         <p id="rewardText"></p>
+
+        <div id="novaFeedbackCard" class="nova-feedback-card" aria-live="polite">
+          <div class="nova-feedback-head">
+            <div class="nova-mini-orb">N</div>
+            <div>
+              <span>NOVA · LO QUE ACABAS DE DESCUBRIR</span>
+              <strong id="novaFeedbackStatus">Preparando la idea...</strong>
+            </div>
+          </div>
+          <p id="novaFeedbackText">NOVA está conectando esta misión con la lógica de dividir.</p>
+        </div>
+
+        <div id="nextTeaser" class="next-teaser" hidden></div>
+
         <div class="fact-chip"><span>🔎 Dato animal</span><strong id="animalFact"></strong></div>
         <div class="field-card" id="fieldCard">
           <div class="field-card-head"><span>📋 FICHA DE CAMPO</span><strong id="fieldAnimalName"></strong></div>
@@ -132,6 +146,8 @@
             <div><span>SUPERPODER</span><strong id="profilePower"></strong></div>
           </div>
         </div>
+
+        <button id="rewardNextBtn" class="reward-next-btn" type="button">Descubrir siguiente misión →</button>
       </div>
     </section>
 
