@@ -3,36 +3,74 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#111a46" />
+  <meta name="theme-color" content="#07112f" />
   <title>La Expedición de Emiliano</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="stars" aria-hidden="true"></div>
-  <main class="app-shell">
+
+  <section id="intro" class="intro" aria-label="Introducción a la expedición">
+    <div class="intro-orbit orbit-one"></div>
+    <div class="intro-orbit orbit-two"></div>
+    <div class="intro-card">
+      <div class="intro-badge">⚡ MENSAJE URGENTE DEL ATLAS</div>
+      <div class="intro-atlas" aria-hidden="true">
+        <span>🦎</span><span>🐙</span><span>🦊</span><span>🦈</span><span>🐧</span>
+        <div class="atlas-core">÷</div>
+      </div>
+      <p class="intro-kicker">EMILIANO...</p>
+      <h1>El Atlas Animal<br><span>te necesita.</span></h1>
+      <p class="intro-copy">
+        Una tormenta de números cerró los caminos que conectan los hábitats del planeta.
+        Cada puerta esconde un <strong>código de división</strong> y una criatura esperando ser descubierta.
+      </p>
+      <div class="intro-mission">
+        <span>Tu misión</span>
+        <strong>Resolver • Descubrir • Avanzar</strong>
+      </div>
+      <p class="intro-promise">No hay cronómetro. Puedes probar, pedir pistas y volver a intentarlo.</p>
+      <button id="startBtn" class="start-btn">🚀 Entrar al Atlas</button>
+      <button id="skipIntroBtn" class="intro-text-btn">Ya conozco la misión</button>
+    </div>
+  </section>
+
+  <main id="app" class="app-shell" hidden>
     <header class="topbar">
       <div>
-        <p class="eyebrow">EXPEDICIÓN MATEMÁTICA</p>
-        <h1>Hola, Emiliano 👋</h1>
+        <p class="eyebrow">LA EXPEDICIÓN DE EMILIANO</p>
+        <h1>Atlas Animal</h1>
       </div>
-      <button id="soundBtn" class="icon-btn" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊</button>
+      <div class="top-actions">
+        <button id="mapBtn" class="icon-btn" aria-label="Ver ruta de mundos">🗺️</button>
+        <button id="soundBtn" class="icon-btn" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊</button>
+      </div>
     </header>
+
+    <section class="world-strip" aria-label="Mundo actual">
+      <div class="world-icon" id="worldIcon">🌿</div>
+      <div>
+        <p id="chapterText">CAPÍTULO 1</p>
+        <strong id="worldName">Bosque de los Repartos</strong>
+      </div>
+      <span id="worldProgress">1/6</span>
+    </section>
 
     <section class="hero-card" aria-labelledby="missionTitle">
       <div class="hero-copy">
-        <span class="pill">Misión <span id="missionNumber">1</span> de 3</span>
-        <h2 id="missionTitle">Reparte en partes iguales</h2>
-        <p id="missionPrompt">Tenemos 8 criaturas y 2 refugios. Cada refugio debe recibir la misma cantidad.</p>
+        <span class="pill">Misión <span id="missionNumber">1</span> de <span id="missionTotal">36</span></span>
+        <h2 id="missionTitle">El primer código</h2>
+        <p id="missionPrompt">El Atlas está buscando una señal...</p>
+        <div class="story-line" id="storyLine"></div>
       </div>
-      <div class="mascot" id="mascot" role="img" aria-label="Robot explorador Nova">
-        <div class="antenna"></div>
-        <div class="face"><span></span><span></span></div>
-        <div class="body">NOVA</div>
+      <div class="mission-animal" aria-hidden="true">
+        <span id="animalEmoji">🦎</span>
+        <small id="animalName">Gecko</small>
       </div>
     </section>
 
     <section class="progress-wrap" aria-label="Progreso de Emiliano">
-      <div class="progress-label"><span>Tu expedición</span><strong id="progressText">0%</strong></div>
+      <div class="progress-label"><span>Atlas recuperado</span><strong id="progressText">0%</strong></div>
       <div class="progress-track"><div id="progressBar" class="progress-bar"></div></div>
     </section>
 
@@ -44,18 +82,38 @@
     </section>
 
     <section class="reward-card" id="rewardCard" hidden>
-      <div class="reward-icon">✨</div>
-      <div>
-        <p class="eyebrow">DESCUBRIMIENTO</p>
-        <h3 id="rewardTitle">¡Muy bien, Emiliano!</h3>
-        <p id="rewardText">Encontraste una nueva forma de repartir.</p>
+      <div class="reward-animal" id="rewardEmoji">✨</div>
+      <div class="reward-copy">
+        <p class="eyebrow">CRIATURA DESBLOQUEADA</p>
+        <h3 id="rewardTitle">¡Código recuperado!</h3>
+        <p id="rewardText"></p>
+        <div class="fact-chip"><span>🔎 Dato animal</span><strong id="animalFact"></strong></div>
       </div>
+    </section>
+
+    <section id="finalCard" class="final-card" hidden>
+      <div class="final-glow"></div>
+      <div class="final-icon">🏆</div>
+      <p class="eyebrow">ATLAS RESTAURADO</p>
+      <h2>¡Emiliano, completaste la expedición!</h2>
+      <p>Recuperaste los 36 códigos y atravesaste todos los hábitats. El Atlas Animal vuelve a estar conectado.</p>
+      <button id="replayBtn" class="primary-btn">Volver a explorar</button>
     </section>
 
     <footer>
       <button id="resetBtn" class="text-btn">Reiniciar aventura</button>
     </footer>
   </main>
+
+  <div id="worldModal" class="modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="routeTitle">
+      <div class="modal-head">
+        <div><p class="eyebrow">RUTA DE EMILIANO</p><h2 id="routeTitle">Los 6 mundos</h2></div>
+        <button id="closeMapBtn" class="icon-btn" aria-label="Cerrar ruta">✕</button>
+      </div>
+      <div id="worldMap" class="world-map"></div>
+    </div>
+  </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
