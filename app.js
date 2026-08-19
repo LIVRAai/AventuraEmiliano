@@ -157,11 +157,23 @@
     {w:5,type:'equation',title:'El corazón del Atlas',story:'Todas las criaturas aparecen alrededor del núcleo. Solo falta un código. Emiliano, este es el final de la expedición.',prompt:'Resuelve el último código: 225 ÷ 15.',equation:[225,15,15],answers:[12,13,14,15],animal:'Atlas Animal',animalEmoji:'🌍',hint:'15 × 15 = 225.',reward:'225 ÷ 15 = 15. ¡El Atlas está completo!',fact:'Cada especie del planeta forma parte de una red de vida conectada con su ambiente y con otras especies.'}
   ];
 
-  let soundOn = localStorage.getItem('emilianoSound') !== 'off';
-  let mission = Number(localStorage.getItem('emilianoMission') || 0);
+  const SAVE_KEY = 'emilianoGameStateV2';
+
+  function readSavedGame() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  const savedGame = readSavedGame();
+  let soundOn = savedGame?.soundOn ?? (localStorage.getItem('emilianoSound') !== 'off');
+  let mission = Number(savedGame?.mission ?? localStorage.getItem('emilianoMission') ?? 0);
   if (!Number.isFinite(mission) || mission < 0 || mission >= missions.length) mission = 0;
   if (localStorage.getItem('emilianoUnlocked') === null) {
-    localStorage.setItem('emilianoUnlocked', String(mission));
+    localStorage.setItem('emilianoUnlocked', String(savedGame?.unlocked ?? mission));
   }
   let selectedCreature = null;
   let selectedAnswer = null;
@@ -169,6 +181,51 @@
   let tutorRequestId = 0;
   let tutorHistory = [];
   let tutorBusy = false;
+  let currentMissionCompleted = false;
+  let gameCompleted = Boolean(savedGame?.gameCompleted);
+
+  function collectShareState() {
+    const bank = $('#bank');
+    if (!bank) return null;
+    const bankIds = [...bank.children].map(el => Number(el.dataset.id));
+    const groups = [...document.querySelectorAll('.zone-items')].map(zone =>
+      [...zone.children].map(el => Number(el.dataset.id))
+    );
+    return { bankIds, groups };
+  }
+
+  function saveGameState() {
+    const state = {
+      version: 2,
+      mission,
+      unlocked: unlockedCount(),
+      soundOn,
+      introSeen: localStorage.getItem('emilianoIntroSeen') === 'yes',
+      selectedAnswer,
+      attemptCount,
+      tutorHistory: tutorHistory.slice(-10),
+      tutorOpen: !aiTutorCard.hidden,
+      shareState: missions[mission]?.type === 'share' ? collectShareState() : null,
+      currentMissionCompleted,
+      gameCompleted,
+      savedAt: Date.now()
+    };
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      localStorage.setItem('emilianoMission', String(mission));
+      localStorage.setItem('emilianoUnlocked', String(state.unlocked));
+      localStorage.setItem('emilianoSound', soundOn ? 'on' : 'off');
+    } catch {}
+  }
+
+  function clearCurrentMissionState() {
+    selectedCreature = null;
+    selectedAnswer = null;
+    attemptCount = 0;
+    tutorHistory = [];
+    currentMissionCompleted = false;
+    gameCompleted = false;
+  }
 
   missionTotal.textContent = missions.length;
   soundBtn.textContent = soundOn ? '🔊' : '🔇';
@@ -217,6 +274,7 @@
       window.scrollTo(0, 0);
     }, 420);
     localStorage.setItem('emilianoIntroSeen', 'yes');
+    saveGameState();
   }
 
   function currentWorldIndex() { return missions[mission].w; }
@@ -313,10 +371,60 @@
     document.documentElement.style.setProperty('--world-accent', w.color);
   }
 
-  function renderMission() {
+  function restoreSharingState(saved) {
+    if (!saved?.shareState?.groups) return;
+    const bank = $('#bank');
+    if (!bank) return;
+    saved.shareState.groups.forEach((ids, groupIndex) => {
+      const target = document.querySelector(`.zone[data-group="${groupIndex}"] .zone-items`);
+      if (!target) return;
+      ids.forEach(id => {
+        const creature = bank.querySelector(`.creature[data-id="${id}"]`);
+        if (creature) target.appendChild(creature);
+      });
+    });
+    updateZoneCounts();
+  }
+
+  function restoreEquationState(saved) {
+    if (saved?.selectedAnswer === null || saved?.selectedAnswer === undefined) return;
+    selectedAnswer = Number(saved.selectedAnswer);
+    [...document.querySelectorAll('.answer-btn')].forEach(btn => {
+      btn.classList.toggle('selected', Number(btn.textContent) === selectedAnswer);
+    });
+  }
+
+  function restoreTutorState(saved) {
+    tutorHistory = Array.isArray(saved?.tutorHistory) ? saved.tutorHistory.slice(-10) : [];
+    resetTutorChat();
+    tutorHistory.forEach(item => {
+      if (item?.role === 'user' || item?.role === 'assistant') {
+        appendTutorMessage(item.role === 'user' ? 'user' : 'assistant', String(item.content || ''));
+      }
+    });
+    aiTutorCard.hidden = !(saved?.tutorOpen && tutorHistory.length);
+  }
+
+  function showSavedReward() {
+    const m = missions[mission];
+    rewardCard.hidden = false;
+    rewardEmoji.innerHTML = animalVisualMarkup(m, 'reward-art');
+    rewardTitle.textContent = mission === missions.length - 1 ? '¡Último código recuperado, Emiliano!' : '¡Código recuperado, Emiliano!';
+    rewardText.textContent = m.reward;
+    animalFact.textContent = m.fact;
+    fillRewardProfile(m);
+    checkBtn.textContent = mission === missions.length - 1 ? 'Completar el Atlas' : 'Siguiente misión';
+    checkBtn.dataset.next = 'true';
+    setProgress(1);
+  }
+
+  function renderMission({ restore = true } = {}) {
+    const saved = restore ? readSavedGame() : null;
+    const sameMission = saved && Number(saved.mission) === mission;
     selectedCreature = null;
-    selectedAnswer = null;
-    attemptCount = 0;
+    selectedAnswer = sameMission ? (saved.selectedAnswer ?? null) : null;
+    attemptCount = sameMission ? Number(saved.attemptCount || 0) : 0;
+    currentMissionCompleted = Boolean(sameMission && saved.currentMissionCompleted);
     aiTutorCard.hidden = true;
     tutorHistory = [];
     resetTutorChat();
@@ -342,6 +450,18 @@
 
     if (m.type === 'equation') renderEquation(m);
     else renderSharing(m);
+
+    if (sameMission) {
+      if (m.type === 'equation') restoreEquationState(saved);
+      else restoreSharingState(saved);
+      restoreTutorState(saved);
+      if (currentMissionCompleted) showSavedReward();
+      if (saved.gameCompleted && mission === missions.length - 1) {
+        gameCompleted = true;
+        completeGame(false);
+      }
+    }
+    saveGameState();
   }
 
   function makeCreature(emoji, i) {
@@ -357,6 +477,7 @@
       document.querySelectorAll('.creature.selected').forEach(x => x.classList.remove('selected'));
       selectedCreature = b;
       b.classList.add('selected');
+      saveGameState();
     });
     return b;
   }
@@ -389,6 +510,7 @@
         selectedCreature.classList.remove('selected');
         selectedCreature = null;
         updateZoneCounts();
+        saveGameState();
       };
       zone.addEventListener('click', place);
       zone.addEventListener('keydown', (e) => {
@@ -431,6 +553,7 @@
         grid.querySelectorAll('.answer-btn').forEach(x => x.classList.remove('selected'));
         bttn.classList.add('selected');
         selectedAnswer = n;
+        saveGameState();
       });
       grid.appendChild(bttn);
     });
@@ -498,12 +621,13 @@
     if (!userQuestion) return;
 
     const requestId = ++tutorRequestId;
-    const previousHistory = tutorHistory.slice(-8);
+    const previousHistory = tutorHistory.slice(-12);
 
     aiTutorCard.hidden = false;
     aiTutorTitle.textContent = 'Estoy aquí, Emiliano';
     appendTutorMessage('user', userQuestion);
     tutorHistory.push({ role: 'user', content: userQuestion });
+    saveGameState();
     const pending = appendTutorMessage('assistant', 'Estoy mirando tu ejercicio…', true);
 
     aiStatus.textContent = 'PENSANDO';
@@ -541,7 +665,8 @@
       pending.remove();
       appendTutorMessage('assistant', message);
       tutorHistory.push({ role: 'assistant', content: message });
-      tutorHistory = tutorHistory.slice(-10);
+      tutorHistory = tutorHistory.slice(-12);
+      saveGameState();
       aiStatus.textContent = 'LISTO';
       aiStatus.className = 'ai-status';
       playTap();
@@ -575,14 +700,18 @@
     animalFact.textContent = m.fact;
     fillRewardProfile(m);
     localStorage.setItem('emilianoUnlocked', String(Math.max(unlockedCount(), mission + 1)));
+    currentMissionCompleted = true;
+    gameCompleted = false;
     setProgress(1);
     checkBtn.textContent = mission === missions.length - 1 ? 'Completar el Atlas' : 'Siguiente misión';
     checkBtn.dataset.next = 'true';
+    saveGameState();
     rewardCard.scrollIntoView({behavior:'smooth', block:'nearest'});
   }
 
   function incorrect(m) {
     attemptCount += 1;
+    saveGameState();
     playOops();
     gameArea.classList.remove('shake');
     void gameArea.offsetWidth;
@@ -594,7 +723,7 @@
     // Si quiere ayuda, puede tocar “Preguntar a NOVA”.
   }
 
-  function completeGame() {
+  function completeGame(playAudio = true) {
     rewardCard.hidden = true;
     gameArea.hidden = true;
     checkBtn.hidden = true;
@@ -603,7 +732,10 @@
     progressBar.style.width = '100%';
     progressText.textContent = '100%';
     localStorage.setItem('emilianoMission', String(missions.length - 1));
-    [392,523,659,784,1047].forEach((f,i)=>audioTone(f,.35,'sine',.05,i*.11));
+    gameCompleted = true;
+    currentMissionCompleted = true;
+    saveGameState();
+    if (playAudio) [392,523,659,784,1047].forEach((f,i)=>audioTone(f,.35,'sine',.05,i*.11));
     finalCard.scrollIntoView({behavior:'smooth', block:'center'});
   }
 
@@ -624,8 +756,10 @@
     if (checkBtn.dataset.next === 'true') {
       if (mission === missions.length - 1) { completeGame(); return; }
       mission += 1;
+      clearCurrentMissionState();
       localStorage.setItem('emilianoMission', String(mission));
-      renderMission();
+      saveGameState();
+      renderMission({ restore: false });
       window.scrollTo({top: 0, behavior: 'smooth'});
       playTap();
       return;
@@ -648,6 +782,7 @@
   aiTutorBtn.addEventListener('click', () => {
     playTap();
     aiTutorCard.hidden = false;
+    saveGameState();
 
     // Abrir el tutor no crea ninguna pregunta automática.
     // Emiliano decide qué quiere preguntar.
@@ -674,6 +809,7 @@
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     localStorage.setItem('emilianoSound', soundOn ? 'on' : 'off');
+    saveGameState();
     soundBtn.textContent = soundOn ? '🔊' : '🔇';
     soundBtn.setAttribute('aria-pressed', String(soundOn));
     if (soundOn) playTap();
@@ -681,19 +817,23 @@
 
   resetBtn.addEventListener('click', () => {
     mission = 0;
+    clearCurrentMissionState();
     localStorage.setItem('emilianoMission', '0');
     localStorage.setItem('emilianoUnlocked', '0');
+    localStorage.removeItem(SAVE_KEY);
     gameArea.hidden = false;
-    renderMission();
+    renderMission({ restore: false });
     showToast('La expedición comenzó de nuevo 🚀');
   });
 
   replayBtn.addEventListener('click', () => {
     mission = 0;
+    clearCurrentMissionState();
     localStorage.setItem('emilianoMission', '0');
     localStorage.setItem('emilianoUnlocked', '0');
+    localStorage.removeItem(SAVE_KEY);
     gameArea.hidden = false;
-    renderMission();
+    renderMission({ restore: false });
     window.scrollTo({top:0, behavior:'smooth'});
   });
 
@@ -738,5 +878,17 @@
   startBtn.addEventListener('click', () => openApp(true));
   skipIntroBtn.addEventListener('click', () => openApp(false));
 
-  // La intro siempre aparece al abrir para conservar el efecto de aventura.
+  // Guarda incluso si se cierra el navegador, se bloquea la tablet o cambia de app.
+  window.addEventListener('pagehide', saveGameState);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') saveGameState();
+  });
+
+  const initialSaved = readSavedGame();
+  if (initialSaved && (Number(initialSaved.mission) > 0 || Number(initialSaved.unlocked) > 0 || initialSaved.currentMissionCompleted)) {
+    startBtn.textContent = `▶️ Continuar misión ${mission + 1}`;
+    skipIntroBtn.textContent = 'Entrar sin sonido';
+  }
+
+  // La intro aparece al abrir, pero el botón continúa exactamente donde Emiliano quedó.
 })();

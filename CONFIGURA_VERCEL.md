@@ -68,3 +68,30 @@ El saludo visible del tutor es intencionalmente breve: **“Pregúntame, yo pued
 ## Ajuste NOVA 4.1
 
 Al abrir `Preguntar a NOVA`, el chat solo muestra `Pregúntame, yo puedo ayudarte.`. La aplicación no crea mensajes automáticos atribuidos a Emiliano. Los mensajes `EMILIANO` aparecen únicamente cuando él escribe y envía una pregunta o pulsa voluntariamente un botón rápido. Tampoco se inicia una conversación automáticamente después de errores.
+
+
+## Guardado automático del progreso
+
+La versión 4.2 guarda el avance de Emiliano automáticamente en el navegador de la tablet usando `localStorage`.
+
+Se conserva:
+- misión actual;
+- criaturas desbloqueadas;
+- reparto hecho dentro de una misión;
+- respuesta seleccionada;
+- intentos;
+- conversación reciente con NOVA;
+- misión ya resuelta aunque aún no haya pulsado “Siguiente misión”;
+- preferencia de sonido.
+
+El guardado ocurre después de cada interacción importante y también cuando la página pasa a segundo plano o se cierra.
+
+Esto sobrevive a apagar y encender la tablet siempre que Emiliano vuelva a entrar al mismo dominio y con el mismo navegador. Si se borran los datos del navegador, se usa modo privado, cambia de navegador o cambia de dispositivo, este guardado local no estará disponible. Para sincronizar entre dispositivos haría falta una cuenta o almacenamiento en la nube.
+
+## NOVA 4.3 — tutor compañero de aprendizaje
+
+NOVA ahora prioriza conversación natural y acompañamiento durante el aprendizaje. Responde primero a la pregunta real de Emiliano, puede conversar brevemente sobre la misión o el animal, recuerda hasta 12 mensajes recientes y cambia de estrategia cuando una explicación no funciona.
+
+La metodología sigue siendo clara, concreta, visual, progresiva y centrada en división, pero NOVA ya no está obligado a responder siempre con un único micro-paso ni a terminar siempre con una pregunta.
+
+El backend tampoco crea una pregunta por defecto: `/api/tutor` exige que llegue un mensaje real enviado por Emiliano o por uno de los botones rápidos.
