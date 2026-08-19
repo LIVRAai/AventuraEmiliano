@@ -1,60 +1,81 @@
-# Configurar el Tutor IA de La Expedición de Emiliano
+# Configurar NOVA con OpenAI — GitHub + Vercel
 
-## Dónde pegar la clave
+## IMPORTANTE
+La clave de OpenAI **NO se pega en index.html, app.js, server.mjs ni GitHub**.
 
-No pegues la clave en `index.html`, `app.js` ni `server.mjs`.
+Si una clave ya fue compartida públicamente o pegada en un chat/repositorio, revócala y crea una nueva antes de continuar.
 
-1. En esta misma carpeta, duplica `.env.example`.
-2. Cambia el nombre de la copia a `.env`.
-3. Abre `.env` y cambia esta línea:
+## 1. Sube el proyecto a GitHub
+
+El archivo `.gitignore` ya excluye:
+
+- `.env`
+- `.env.*`
+- `node_modules/`
+
+Antes de hacer push, confirma que tu archivo `.env` no aparece entre los archivos del repositorio.
+
+## 2. Importa el repositorio en Vercel
+
+En Vercel:
+
+1. New Project
+2. Importa el repositorio de GitHub
+3. Deja el proyecto en la raíz donde están `package.json`, `server.mjs` e `index.html`
+4. Antes o después del primer deploy, abre **Settings → Environment Variables**
+
+## 3. Pega la clave en Vercel
+
+Crea estas variables:
 
 ```text
-OPENAI_API_KEY=PEGA_AQUI_TU_NUEVA_CLAVE
+OPENAI_API_KEY=TU_CLAVE_NUEVA
+OPENAI_MODEL=gpt-5.6-luna
 ```
 
-por:
+Recomendación: habilítalas para **Production** y **Preview**.
+
+No necesitas configurar `PORT` en Vercel. Vercel gestiona el puerto de ejecución.
+
+## 4. Redeploy
+
+Después de agregar o cambiar una variable de entorno, realiza un nuevo deployment para que la función use el nuevo valor.
+
+## 5. Comprobar que NOVA está conectado
+
+Abre:
 
 ```text
-OPENAI_API_KEY=sk-proj-TU_CLAVE_NUEVA_AQUI
+https://TU-DOMINIO.vercel.app/api/health
 ```
 
-No uses la clave que ya compartiste en el chat; revócala y crea una nueva.
+Deberías ver algo parecido a:
 
-## Ejecutar la web con IA
+```json
+{
+  "ok": true,
+  "aiConfigured": true,
+  "model": "gpt-5.6-luna"
+}
+```
 
-Necesitas Node.js instalado.
+Después abre el juego y prueba **🤖 Tutor IA — NOVA**.
 
-En una terminal, entra a esta carpeta y ejecuta:
+## Desarrollo local opcional
+
+Crea un archivo `.env` solo en tu computador:
+
+```text
+OPENAI_API_KEY=TU_CLAVE_NUEVA
+OPENAI_MODEL=gpt-5.6-luna
+PORT=3000
+```
+
+Luego:
 
 ```bash
 npm install
 npm start
 ```
 
-Luego abre:
-
-```text
-http://localhost:3000
-```
-
-Importante: si abres `index.html` directamente con doble clic, el juego funciona, pero el Tutor IA no podrá conectarse porque `/api/tutor` necesita el servidor.
-
-## Cómo funciona
-
-El navegador nunca recibe la clave. La ruta es:
-
-```text
-Emiliano -> navegador -> /api/tutor -> servidor -> OpenAI
-```
-
-La IA solo genera pistas pedagógicas. La respuesta correcta de la división se comprueba localmente con JavaScript, no con IA.
-
-## Modelo
-
-Por defecto se usa:
-
-```text
-OPENAI_MODEL=gpt-5.6-luna
-```
-
-Puedes cambiarlo en `.env` sin modificar el código.
+Y abre `http://localhost:3000`.

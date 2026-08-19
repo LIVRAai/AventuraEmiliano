@@ -87,7 +87,7 @@ app.post('/api/tutor', async (req, res) => {
 
   if (!process.env.OPENAI_API_KEY) {
     return res.status(503).json({
-      error: 'La IA no está configurada. Agrega OPENAI_API_KEY en el archivo .env del servidor.'
+      error: 'La IA no está configurada. Agrega OPENAI_API_KEY como variable de entorno del servidor.'
     });
   }
 
@@ -121,7 +121,7 @@ app.post('/api/tutor', async (req, res) => {
     console.error('OpenAI tutor error:', error?.status || '', error?.message || error);
     const status = Number(error?.status) || 500;
     if (status === 401) {
-      return res.status(503).json({ error: 'La clave de OpenAI no es válida. Revisa OPENAI_API_KEY en .env.' });
+      return res.status(503).json({ error: 'La clave de OpenAI no es válida. Revisa la variable OPENAI_API_KEY.' });
     }
     if (status === 429) {
       return res.status(429).json({ error: 'La IA alcanzó temporalmente su límite. Puedes seguir usando la pista normal.' });
@@ -130,7 +130,13 @@ app.post('/api/tutor', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`La Expedición de Emiliano: http://localhost:${PORT}`);
-  console.log(`Tutor IA: ${process.env.OPENAI_API_KEY ? 'configurado' : 'SIN configurar'}`);
-});
+// Vercel importa la aplicación Express como función serverless.
+// En local seguimos levantando el servidor con `npm start`.
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`La Expedición de Emiliano: http://localhost:${PORT}`);
+    console.log(`Tutor IA: ${process.env.OPENAI_API_KEY ? 'configurado' : 'SIN configurar'}`);
+  });
+}
+
+export default app;

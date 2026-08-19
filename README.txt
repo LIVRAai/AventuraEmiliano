@@ -20,3 +20,9 @@ EJECUCIÓN
 3. npm install
 4. npm start
 5. abre http://localhost:3000
+
+
+=== DESPLIEGUE EN VERCEL ===
+Este proyecto está preparado para GitHub -> Vercel.
+NO subas .env. En Vercel configura OPENAI_API_KEY y OPENAI_MODEL desde Settings > Environment Variables.
+server.mjs exporta la aplicación Express para que Vercel pueda ejecutarla y conserva npm start para desarrollo local.
