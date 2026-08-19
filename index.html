@@ -81,21 +81,40 @@
 
     <section class="actions">
       <button id="hintBtn" class="secondary-btn">💡 Pista</button>
-      <button id="aiTutorBtn" class="secondary-btn ai-btn">🤖 Tutor IA</button>
+      <button id="aiTutorBtn" class="secondary-btn ai-btn">💬 Preguntar a NOVA</button>
       <button id="checkBtn" class="primary-btn">Comprobar</button>
     </section>
 
-    <section id="aiTutorCard" class="ai-tutor-card" hidden aria-live="polite">
+    <section id="aiTutorCard" class="ai-tutor-card" hidden>
       <div class="ai-tutor-head">
         <div class="nova-orb">N</div>
         <div>
-          <p class="eyebrow">NOVA · TUTOR IA</p>
-          <strong id="aiTutorTitle">Pensemos juntos, Emiliano</strong>
+          <p class="eyebrow">NOVA · TU TUTOR</p>
+          <strong id="aiTutorTitle">Vamos paso a paso, Emiliano</strong>
         </div>
-        <span id="aiStatus" class="ai-status">IA</span>
+        <span id="aiStatus" class="ai-status">LISTO</span>
       </div>
-      <p id="aiTutorText">Puedo darte otra forma de pensar esta división sin decirte la respuesta.</p>
-      <button id="aiTutorAgainBtn" class="ai-again-btn" type="button">✨ Otra explicación</button>
+
+      <div id="aiTutorChat" class="tutor-chat" aria-live="polite" aria-label="Conversación con NOVA">
+        <div class="tutor-message nova-message">
+          <span>NOVA</span>
+          <p>Si una división no se entiende, pregúntame. No te daré la respuesta de una vez: la vamos a descubrir juntos, un paso a la vez.</p>
+        </div>
+      </div>
+
+      <div class="tutor-quick-actions" aria-label="Formas rápidas de pedir ayuda">
+        <button type="button" data-tutor-prompt="No entiendo cómo empezar esta división." data-reason="help">No entiendo</button>
+        <button type="button" data-tutor-prompt="Muéstramelo con objetos o grupos." data-reason="visual">🧩 Con objetos</button>
+        <button type="button" data-tutor-prompt="Dame solamente el siguiente paso." data-reason="step">Un paso</button>
+        <button type="button" data-tutor-prompt="Explícamelo de otra forma." data-reason="another">Otra forma</button>
+      </div>
+
+      <form id="aiTutorForm" class="tutor-input-row">
+        <label for="aiTutorInput" class="sr-only">Pregúntale a NOVA</label>
+        <input id="aiTutorInput" type="text" maxlength="180" autocomplete="off" placeholder="Ej.: ¿Por qué tengo que repartir entre 2?" />
+        <button id="aiTutorSendBtn" type="submit">Enviar</button>
+      </form>
+      <p class="tutor-note">NOVA te ayuda a pensar. La misión la resuelves tú.</p>
     </section>
 
     <section class="reward-card" id="rewardCard" hidden>

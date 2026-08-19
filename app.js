@@ -6,8 +6,11 @@
   const aiTutorBtn = $('#aiTutorBtn');
   const aiTutorCard = $('#aiTutorCard');
   const aiTutorTitle = $('#aiTutorTitle');
-  const aiTutorText = $('#aiTutorText');
-  const aiTutorAgainBtn = $('#aiTutorAgainBtn');
+  const aiTutorChat = $('#aiTutorChat');
+  const aiTutorForm = $('#aiTutorForm');
+  const aiTutorInput = $('#aiTutorInput');
+  const aiTutorSendBtn = $('#aiTutorSendBtn');
+  const aiTutorQuickBtns = [...document.querySelectorAll('[data-tutor-prompt]')];
   const aiStatus = $('#aiStatus');
   const soundBtn = $('#soundBtn');
   const resetBtn = $('#resetBtn');
@@ -164,6 +167,8 @@
   let selectedAnswer = null;
   let attemptCount = 0;
   let tutorRequestId = 0;
+  let tutorHistory = [];
+  let tutorBusy = false;
 
   missionTotal.textContent = missions.length;
   soundBtn.textContent = soundOn ? '🔊' : '🔇';
@@ -313,8 +318,9 @@
     selectedAnswer = null;
     attemptCount = 0;
     aiTutorCard.hidden = true;
-    aiTutorText.textContent = 'Puedo darte otra forma de pensar esta división sin decirte la respuesta.';
-    aiStatus.textContent = 'IA';
+    tutorHistory = [];
+    resetTutorChat();
+    aiStatus.textContent = 'LISTO';
     aiStatus.className = 'ai-status';
     rewardCard.hidden = true;
     finalCard.hidden = true;
@@ -452,19 +458,66 @@
     return `Repartió los objetos así: [${counts.join(', ')}]. Quedan ${remaining} objetos sin repartir.`;
   }
 
-  async function requestTutor(reason = 'help') {
+  function resetTutorChat() {
+    aiTutorChat.innerHTML = `
+      <div class="tutor-message nova-message">
+        <span>NOVA</span>
+        <p>Si una división no se entiende, pregúntame. No te daré la respuesta de una vez: la vamos a descubrir juntos, un paso a la vez.</p>
+      </div>`;
+  }
+
+  function appendTutorMessage(role, text, pending = false) {
+    const wrap = document.createElement('div');
+    wrap.className = `tutor-message ${role === 'user' ? 'emi-message' : 'nova-message'}${pending ? ' pending' : ''}`;
+    const label = document.createElement('span');
+    label.textContent = role === 'user' ? 'EMILIANO' : 'NOVA';
+    const p = document.createElement('p');
+    p.textContent = text;
+    wrap.append(label, p);
+    aiTutorChat.appendChild(wrap);
+    aiTutorChat.scrollTop = aiTutorChat.scrollHeight;
+    return wrap;
+  }
+
+  function setTutorBusy(isBusy) {
+    tutorBusy = isBusy;
+    aiTutorBtn.disabled = isBusy;
+    aiTutorSendBtn.disabled = isBusy;
+    aiTutorInput.disabled = isBusy;
+    aiTutorQuickBtns.forEach(btn => btn.disabled = isBusy);
+  }
+
+  function defaultTutorQuestion(reason) {
+    if (reason === 'error') return 'Intenté resolverlo, pero todavía no me sale. Guíame paso a paso.';
+    if (reason === 'visual') return 'Muéstramelo con objetos o grupos.';
+    if (reason === 'step') return 'Dame solamente el siguiente paso.';
+    if (reason === 'another') return 'Explícamelo de otra forma.';
+    return 'No entiendo cómo empezar esta división.';
+  }
+
+  async function requestTutor(reason = 'help', question = '') {
+    if (tutorBusy) return;
     const m = missions[mission];
+    const userQuestion = (question || defaultTutorQuestion(reason)).trim().slice(0, 180);
+    if (!userQuestion) return;
+
     const requestId = ++tutorRequestId;
+    const previousHistory = tutorHistory.slice(-8);
+
     aiTutorCard.hidden = false;
-    aiTutorTitle.textContent = reason === 'error' ? 'Probemos otra estrategia, Emiliano' : 'Pensemos juntos, Emiliano';
-    aiTutorText.textContent = 'NOVA está preparando una pista…';
+    aiTutorTitle.textContent = reason === 'error' ? 'Probemos un paso diferente, Emiliano' : 'Vamos paso a paso, Emiliano';
+    appendTutorMessage('user', userQuestion);
+    tutorHistory.push({ role: 'user', content: userQuestion });
+    const pending = appendTutorMessage('assistant', 'Estoy mirando tu ejercicio…', true);
+
     aiStatus.textContent = 'PENSANDO';
     aiStatus.className = 'ai-status loading';
-    aiTutorBtn.disabled = true;
-    aiTutorAgainBtn.disabled = true;
+    setTutorBusy(true);
 
     const payload = {
       reason,
+      question: userQuestion,
+      history: previousHistory,
       missionNumber: mission + 1,
       missionTitle: m.title,
       animal: m.animal,
@@ -487,21 +540,28 @@
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'No fue posible conectar con NOVA.');
       if (requestId !== tutorRequestId) return;
-      aiTutorText.textContent = data.message || 'Mira los grupos y busca que todos queden exactamente iguales.';
+
+      const message = data.message || 'Miremos el total y luego formemos grupos iguales. ¿Cuántos grupos pide la misión?';
+      pending.remove();
+      appendTutorMessage('assistant', message);
+      tutorHistory.push({ role: 'assistant', content: message });
+      tutorHistory = tutorHistory.slice(-10);
       aiStatus.textContent = 'LISTO';
       aiStatus.className = 'ai-status';
       playTap();
     } catch (err) {
       if (requestId !== tutorRequestId) return;
-      aiTutorText.textContent = err.message.includes('configurada')
-        ? 'La IA todavía no está configurada. Un adulto debe agregar OPENAI_API_KEY en el archivo .env del servidor.'
-        : 'NOVA no pudo conectarse ahora. Puedes seguir jugando con la pista normal.';
+      pending.remove();
+      const message = err.message.includes('configurada')
+        ? 'NOVA todavía no está conectado. Un adulto debe revisar OPENAI_API_KEY en Vercel.'
+        : 'No pude conectarme ahora. Podemos seguir con la pista normal y volver a intentarlo después.';
+      appendTutorMessage('assistant', message);
       aiStatus.textContent = 'SIN CONEXIÓN';
       aiStatus.className = 'ai-status error';
     } finally {
       if (requestId === tutorRequestId) {
-        aiTutorBtn.disabled = false;
-        aiTutorAgainBtn.disabled = false;
+        setTutorBusy(false);
+        aiTutorInput.focus({ preventScroll: true });
       }
     }
   }
@@ -589,12 +649,25 @@
 
   aiTutorBtn.addEventListener('click', () => {
     playTap();
-    requestTutor('help');
+    aiTutorCard.hidden = false;
+    if (tutorHistory.length === 0) requestTutor('help');
+    else aiTutorInput.focus();
   });
 
-  aiTutorAgainBtn.addEventListener('click', () => {
+  aiTutorForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const question = aiTutorInput.value.trim();
+    if (!question) return;
+    aiTutorInput.value = '';
     playTap();
-    requestTutor('another');
+    requestTutor('question', question);
+  });
+
+  aiTutorQuickBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      playTap();
+      requestTutor(btn.dataset.reason || 'question', btn.dataset.tutorPrompt || '');
+    });
   });
 
   soundBtn.addEventListener('click', () => {

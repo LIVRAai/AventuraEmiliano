@@ -50,3 +50,12 @@ Si `aiConfigured` es false, la variable `OPENAI_API_KEY` no está disponible en 
 Entra al juego y pulsa `Tutor IA`.
 
 Si falla, revisa Vercel → Logs y filtra por `/api/tutor`.
+
+
+## NOVA: tutor conversacional
+
+Esta versión convierte NOVA en un tutor conversacional. Emiliano puede escribir preguntas libres o usar botones rápidos como **No entiendo**, **Con objetos**, **Un paso** y **Otra forma**.
+
+El archivo `api/tutor.js` contiene las reglas pedagógicas del tutor. Esas reglas exigen enseñanza concreta, estructurada, paso a paso y sin mencionar etiquetas diagnósticas. La clave sigue leyendo `OPENAI_API_KEY` desde Vercel.
+
+Después de subir esta versión a GitHub, espera el nuevo deployment de Vercel o ejecuta **Redeploy**. No necesitas cambiar la variable `OPENAI_API_KEY`.

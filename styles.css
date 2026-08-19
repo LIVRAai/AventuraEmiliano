@@ -256,7 +256,7 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
   .profile-facts{grid-template-columns:1fr}.top-actions{gap:5px}.top-actions .icon-btn{width:43px;height:43px}
 }
 
-/* ===== TUTOR IA / NOVA ===== */
+/* ===== NOVA · TUTOR CONVERSACIONAL ===== */
 .actions { grid-template-columns:1fr 1fr 1.35fr; }
 .ai-btn { border-color:rgba(157,124,255,.38);background:linear-gradient(145deg,rgba(157,124,255,.16),rgba(88,230,255,.08)); }
 .ai-tutor-card { margin-top:14px;padding:16px;border-radius:24px;background:linear-gradient(145deg,rgba(157,124,255,.15),rgba(88,230,255,.08));border:1px solid rgba(157,124,255,.30);box-shadow:var(--shadow); }
@@ -266,13 +266,34 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
 .ai-status { padding:5px 8px;border-radius:999px;background:rgba(112,240,167,.12);border:1px solid rgba(112,240,167,.2);color:var(--green);font-size:.6rem;font-weight:1000;letter-spacing:.08em; }
 .ai-status.loading { color:var(--yellow);border-color:rgba(255,216,77,.2);background:rgba(255,216,77,.08); }
 .ai-status.error { color:#ff9fbb;border-color:rgba(255,112,183,.25);background:rgba(255,112,183,.08); }
-#aiTutorText { margin:12px 0 0;color:#eef2ff;line-height:1.55;font-size:.9rem; }
-.ai-again-btn { margin-top:12px;min-height:42px;padding:9px 13px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:white;font-weight:900;cursor:pointer; }
-.ai-again-btn:disabled,.ai-btn:disabled { opacity:.55;cursor:progress; }
+.tutor-chat { margin-top:14px;display:flex;flex-direction:column;gap:9px;max-height:330px;overflow-y:auto;padding:2px 3px 6px;scroll-behavior:smooth; }
+.tutor-message { width:min(88%,560px);padding:11px 13px;border-radius:16px;line-height:1.48; }
+.tutor-message span { display:block;margin-bottom:3px;font-size:.58rem;font-weight:1000;letter-spacing:.09em;opacity:.72; }
+.tutor-message p { margin:0;font-size:.91rem; }
+.nova-message { align-self:flex-start;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.10);border-bottom-left-radius:6px; }
+.emi-message { align-self:flex-end;background:linear-gradient(145deg,rgba(88,230,255,.18),rgba(112,240,167,.12));border:1px solid rgba(88,230,255,.22);border-bottom-right-radius:6px; }
+.tutor-message.pending { opacity:.66;animation:tutorPulse 1.1s ease-in-out infinite; }
+@keyframes tutorPulse { 50% { opacity:.38; } }
+.tutor-quick-actions { margin-top:11px;display:flex;gap:7px;overflow-x:auto;padding-bottom:3px;scrollbar-width:none; }
+.tutor-quick-actions::-webkit-scrollbar { display:none; }
+.tutor-quick-actions button { flex:0 0 auto;min-height:38px;padding:8px 11px;border-radius:999px;border:1px solid rgba(255,255,255,.13);background:rgba(255,255,255,.07);color:#f5f7ff;font-weight:850;font-size:.77rem;cursor:pointer; }
+.tutor-quick-actions button:active { transform:scale(.97); }
+.tutor-input-row { margin-top:10px;display:grid;grid-template-columns:1fr auto;gap:8px; }
+.tutor-input-row input { min-width:0;min-height:48px;border-radius:15px;border:1px solid rgba(255,255,255,.14);background:rgba(5,11,35,.55);color:white;padding:0 14px;font:inherit;outline:none; }
+.tutor-input-row input::placeholder { color:rgba(235,240,255,.52); }
+.tutor-input-row input:focus { border-color:rgba(88,230,255,.62);box-shadow:0 0 0 3px rgba(88,230,255,.09); }
+.tutor-input-row button { min-height:48px;padding:0 16px;border:0;border-radius:15px;background:linear-gradient(145deg,#75efff,#9d7cff);color:#0a1231;font-weight:1000;cursor:pointer; }
+.tutor-note { margin:8px 2px 0;color:rgba(235,240,255,.58);font-size:.69rem; }
+.tutor-input-row button:disabled,.tutor-input-row input:disabled,.tutor-quick-actions button:disabled,.ai-btn:disabled { opacity:.55;cursor:progress; }
+.sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0; }
 
 @media (max-width:560px) {
   .actions{grid-template-columns:1fr 1fr}.actions .primary-btn{grid-column:1 / -1}
+  .tutor-message{width:94%}
+  .tutor-chat{max-height:300px}
 }
 @media (max-width:390px) {
   .actions{grid-template-columns:1fr}.actions .primary-btn{grid-column:auto}
+  .tutor-input-row{grid-template-columns:1fr}
+  .tutor-input-row button{width:100%}
 }
