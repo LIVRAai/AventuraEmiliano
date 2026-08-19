@@ -23,11 +23,11 @@
       <h1>El Atlas Animal<br><span>te necesita.</span></h1>
       <p class="intro-copy">
         Una tormenta de números cerró los caminos que conectan los hábitats del planeta.
-        Cada puerta esconde un <strong>código de división</strong> y una criatura esperando ser descubierta.
+        Cada puerta esconde un <strong>código de división</strong> y una criatura con secretos sobre su vida esperando a Emiliano.
       </p>
       <div class="intro-mission">
         <span>Tu misión</span>
-        <strong>Resolver • Descubrir • Avanzar</strong>
+        <strong>Resolver • Descubrir • Aprender • Avanzar</strong>
       </div>
       <p class="intro-promise">No hay cronómetro. Puedes probar, pedir pistas y volver a intentarlo.</p>
       <button id="startBtn" class="start-btn">🚀 Entrar al Atlas</button>
@@ -42,6 +42,7 @@
         <h1>Atlas Animal</h1>
       </div>
       <div class="top-actions">
+        <button id="fieldGuideBtn" class="icon-btn" aria-label="Abrir bestiario de Emiliano">📖</button>
         <button id="mapBtn" class="icon-btn" aria-label="Ver ruta de mundos">🗺️</button>
         <button id="soundBtn" class="icon-btn" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊</button>
       </div>
@@ -63,10 +64,12 @@
         <p id="missionPrompt">El Atlas está buscando una señal...</p>
         <div class="story-line" id="storyLine"></div>
       </div>
-      <div class="mission-animal" aria-hidden="true">
-        <span id="animalEmoji">🦎</span>
+      <button id="animalCardBtn" class="mission-animal" type="button" aria-label="Conocer al animal de esta misión">
+        <span class="animal-role">GUARDIÁN</span>
+        <span id="animalEmoji" class="animal-visual">🦎</span>
         <small id="animalName">Gecko</small>
-      </div>
+        <span class="animal-learn">🔎 Conóceme</span>
+      </button>
     </section>
 
     <section class="progress-wrap" aria-label="Progreso de Emiliano">
@@ -88,6 +91,15 @@
         <h3 id="rewardTitle">¡Código recuperado!</h3>
         <p id="rewardText"></p>
         <div class="fact-chip"><span>🔎 Dato animal</span><strong id="animalFact"></strong></div>
+        <div class="field-card" id="fieldCard">
+          <div class="field-card-head"><span>📋 FICHA DE CAMPO</span><strong id="fieldAnimalName"></strong></div>
+          <div class="field-grid">
+            <div><span>¿QUÉ ES?</span><strong id="profileType"></strong></div>
+            <div><span>¿DÓNDE VIVE?</span><strong id="profileHabitat"></strong></div>
+            <div><span>¿QUÉ COME?</span><strong id="profileDiet"></strong></div>
+            <div><span>SUPERPODER</span><strong id="profilePower"></strong></div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -112,6 +124,28 @@
         <button id="closeMapBtn" class="icon-btn" aria-label="Cerrar ruta">✕</button>
       </div>
       <div id="worldMap" class="world-map"></div>
+    </div>
+  </div>
+
+  <div id="animalModal" class="modal" hidden>
+    <div class="modal-card animal-modal-card" role="dialog" aria-modal="true" aria-labelledby="animalModalTitle">
+      <div class="modal-head">
+        <div><p class="eyebrow">ARCHIVO DE CAMPO</p><h2 id="animalModalTitle">Animal</h2></div>
+        <button id="closeAnimalBtn" class="icon-btn" aria-label="Cerrar ficha del animal">✕</button>
+      </div>
+      <div id="animalProfile" class="animal-profile"></div>
+    </div>
+  </div>
+
+  <div id="guideModal" class="modal" hidden>
+    <div class="modal-card guide-modal-card" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+      <div class="modal-head">
+        <div><p class="eyebrow">COLECCIÓN DE EMILIANO</p><h2 id="guideTitle">Bestiario del Atlas</h2></div>
+        <button id="closeGuideBtn" class="icon-btn" aria-label="Cerrar bestiario">✕</button>
+      </div>
+      <p class="guide-copy">Cada división correcta recupera una ficha. Toca una criatura desbloqueada para volver a estudiarla.</p>
+      <div id="guideProgress" class="guide-progress"></div>
+      <div id="fieldGuideGrid" class="field-guide-grid"></div>
     </div>
   </div>
 
