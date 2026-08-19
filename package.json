@@ -1,16 +1,7 @@
 {
-  "name": "expedicion-emiliano",
-  "version": "2.0.0",
+  "name": "aventura-emiliano",
+  "version": "3.0.0",
   "private": true,
   "type": "module",
-  "description": "Juego educativo de división con animales y tutor IA.",
-  "scripts": {
-    "start": "node server.mjs",
-    "dev": "node --watch server.mjs"
-  },
-  "dependencies": {
-    "dotenv": "latest",
-    "express": "latest",
-    "openai": "latest"
-  }
+  "description": "La Expedición de Emiliano - juego educativo de división con tutor IA"
 }
