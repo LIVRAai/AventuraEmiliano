@@ -17,6 +17,17 @@
   const settingsBtn = $('#settingsBtn');
   const settingsModal = $('#settingsModal');
   const closeSettingsBtn = $('#closeSettingsBtn');
+  const testerSettingsBtn = $('#testerSettingsBtn');
+  const testerModal = $('#testerModal');
+  const closeTesterBtn = $('#closeTesterBtn');
+  const testerAuthView = $('#testerAuthView');
+  const testerNavigatorView = $('#testerNavigatorView');
+  const testerPinForm = $('#testerPinForm');
+  const testerPinInput = $('#testerPinInput');
+  const testerPinError = $('#testerPinError');
+  const testerMissionGrid = $('#testerMissionGrid');
+  const testerNotebookGrid = $('#testerNotebookGrid');
+  const exitTesterModeBtn = $('#exitTesterModeBtn');
   const rewardCard = $('#rewardCard');
   const rewardTitle = $('#rewardTitle');
   const rewardText = $('#rewardText');
@@ -103,6 +114,10 @@
 
 
   const NOTEBOOK_SAVE_KEY = 'emilianoNotebookV1';
+  const TESTER_PIN = '123456';
+  let testerMode = false;
+  let testerUnlocked = false;
+  let testerSnapshot = null;
 
   const notebookLessons = [
     { dividend:84, divisor:4, animal:'🦥', title:'Las huellas del perezoso', story:'El perezoso guardó un código en tu cuaderno. NOVA te enseñará dónde va cada número.', focus:'Aprender el ciclo completo con dos cifras.' },
@@ -140,6 +155,7 @@
   }
 
   function saveNotebookState() {
+    if (testerMode) return;
     try {
       localStorage.setItem(NOTEBOOK_SAVE_KEY, JSON.stringify({
         lesson: notebookLessonIndex,
@@ -874,6 +890,8 @@
   }
 
   function saveGameState() {
+    if (testerMode) return;
+
     const state = {
       version: 3,
       mission,
@@ -1851,6 +1869,176 @@
     });
   });
 
+
+  function captureTesterSnapshot() {
+    const keys = [
+      SAVE_KEY,
+      NOTEBOOK_SAVE_KEY,
+      'emilianoMission',
+      'emilianoUnlocked',
+      'emilianoSound',
+      'emilianoIntroSeen'
+    ];
+
+    const snapshot = {};
+    keys.forEach((key) => {
+      snapshot[key] = localStorage.getItem(key);
+    });
+    return snapshot;
+  }
+
+  function restoreTesterSnapshot() {
+    if (!testerSnapshot) return;
+
+    Object.entries(testerSnapshot).forEach(([key, value]) => {
+      if (value === null || value === undefined) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+    });
+  }
+
+  function activateTesterMode() {
+    if (!testerMode) {
+      testerSnapshot = captureTesterSnapshot();
+      testerMode = true;
+    }
+    testerUnlocked = true;
+    buildTesterNavigator();
+  }
+
+  function closeAllTesterOverlays() {
+    testerModal.hidden = true;
+    settingsModal.hidden = true;
+    worldModal.hidden = true;
+    animalModal.hidden = true;
+    guideModal.hidden = true;
+    document.body.classList.remove('modal-open');
+  }
+
+  function showNormalMissionShell() {
+    notebookModule.hidden = true;
+    document.querySelector('.actions').hidden = false;
+    document.querySelector('.progress-wrap').hidden = false;
+    document.querySelector('.hero-card').hidden = false;
+    document.querySelector('.world-strip').hidden = false;
+    gameArea.hidden = false;
+    finalCard.hidden = true;
+  }
+
+  function jumpToTesterMission(index) {
+    activateTesterMode();
+    closeAllTesterOverlays();
+    showNormalMissionShell();
+
+    mission = Math.max(0, Math.min(missions.length - 1, Number(index) || 0));
+    clearCurrentMissionState();
+    gameCompleted = false;
+    renderMission({ restore: false });
+
+    showToast(`🧪 Probando misión ${mission + 1} de ${missions.length}`, 2200);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function jumpToTesterNotebook(index) {
+    activateTesterMode();
+    closeAllTesterOverlays();
+
+    finalCard.hidden = true;
+    rewardCard.hidden = true;
+    gameArea.hidden = true;
+    document.querySelector('.actions').hidden = true;
+    document.querySelector('.progress-wrap').hidden = true;
+    document.querySelector('.hero-card').hidden = true;
+    document.querySelector('.world-strip').hidden = true;
+    aiTutorCard.hidden = true;
+    notebookModule.hidden = false;
+
+    notebookLessonIndex = Math.max(0, Math.min(notebookLessons.length - 1, Number(index) || 0));
+    notebookStepIndex = 0;
+    notebookCompletedLessons = 0;
+    notebookRevealedQuotient = '';
+    notebookJournalLines = [];
+    notebookChatHistory = [];
+
+    startNotebookLesson(notebookLessonIndex, false);
+    showToast(`🧪 Probando cuaderno ${notebookLessonIndex + 1} de ${notebookLessons.length}`, 2200);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function buildTesterNavigator() {
+    if (!testerMissionGrid || !testerNotebookGrid) return;
+
+    testerMissionGrid.innerHTML = '';
+    missions.forEach((m, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tester-mission-btn';
+      btn.innerHTML = `
+        <span>${index + 1}</span>
+        <div>
+          <small>${m.challengeLabel || `MISIÓN ${index + 1}`}</small>
+          <strong>${m.title}</strong>
+          <em>${m.animal || ''}</em>
+        </div>
+      `;
+      btn.addEventListener('click', () => jumpToTesterMission(index));
+      testerMissionGrid.appendChild(btn);
+    });
+
+    testerNotebookGrid.innerHTML = '';
+    notebookLessons.forEach((lesson, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tester-mission-btn tester-notebook-btn';
+      btn.innerHTML = `
+        <span>${index + 1}</span>
+        <div>
+          <small>${lesson.dividend} ÷ ${lesson.divisor}</small>
+          <strong>${lesson.title}</strong>
+          <em>${lesson.focus}</em>
+        </div>
+      `;
+      btn.addEventListener('click', () => jumpToTesterNotebook(index));
+      testerNotebookGrid.appendChild(btn);
+    });
+  }
+
+  function openTesterModal() {
+    playTap();
+    settingsModal.hidden = true;
+    testerModal.hidden = false;
+    document.body.classList.add('modal-open');
+
+    testerPinError.hidden = true;
+
+    if (testerUnlocked) {
+      testerAuthView.hidden = true;
+      testerNavigatorView.hidden = false;
+      buildTesterNavigator();
+    } else {
+      testerAuthView.hidden = false;
+      testerNavigatorView.hidden = true;
+      testerPinInput.value = '';
+      setTimeout(() => testerPinInput.focus({ preventScroll: true }), 50);
+    }
+  }
+
+  function exitTesterMode() {
+    if (!testerMode) {
+      testerModal.hidden = true;
+      document.body.classList.remove('modal-open');
+      return;
+    }
+
+    restoreTesterSnapshot();
+    testerMode = false;
+    testerUnlocked = false;
+    testerSnapshot = null;
+
+    // Recargar es la forma más segura de reconstruir exactamente
+    // el progreso real que existía antes de comenzar las pruebas.
+    window.location.reload();
+  }
+
   soundBtn.addEventListener('click', () => {
     soundOn = !soundOn;
     localStorage.setItem('emilianoSound', soundOn ? 'on' : 'off');
@@ -1910,6 +2098,37 @@
   settingsModal.addEventListener('click', (e) => {
     if (e.target === settingsModal) closeSettingsBtn.click();
   });
+
+  testerSettingsBtn?.addEventListener('click', openTesterModal);
+
+  closeTesterBtn?.addEventListener('click', () => {
+    testerModal.hidden = true;
+    document.body.classList.remove('modal-open');
+  });
+
+  testerModal?.addEventListener('click', (e) => {
+    if (e.target === testerModal) closeTesterBtn.click();
+  });
+
+  testerPinForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const pin = String(testerPinInput.value || '').trim();
+
+    if (pin !== TESTER_PIN) {
+      testerPinError.hidden = false;
+      testerPinInput.select();
+      playOops();
+      return;
+    }
+
+    testerPinError.hidden = true;
+    activateTesterMode();
+    testerAuthView.hidden = true;
+    testerNavigatorView.hidden = false;
+    playSuccess();
+  });
+
+  exitTesterModeBtn?.addEventListener('click', exitTesterMode);
 
   mapBtn.addEventListener('click', () => {
     playTap();

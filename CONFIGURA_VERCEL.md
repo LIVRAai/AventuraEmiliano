@@ -53,3 +53,15 @@ El módulo:
 - permite preguntarle a NOVA sobre el paso exacto del cuaderno usando la misma `OPENAI_API_KEY`.
 
 No necesitas crear nuevas variables de entorno en Vercel.
+
+## Modo de pruebas
+
+En **⚙️ Configuración → Modo de pruebas** hay un panel para adultos.
+
+- Clave: `123456`
+- Permite abrir cualquiera de las 36 misiones del Atlas.
+- Permite abrir cualquiera de las 12 misiones de “Dividir en mi cuaderno”.
+- Mientras el modo de pruebas está activo, la app no guarda esos saltos sobre el progreso real de Emiliano.
+- Usa **Salir del modo de pruebas y volver al progreso real** para restaurar la partida previa.
+
+> Nota: la clave está implementada en el frontend y sirve como bloqueo práctico dentro de la app; no debe considerarse seguridad fuerte frente a alguien con acceso al código fuente.

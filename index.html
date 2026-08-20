@@ -336,6 +336,16 @@
 
         <div class="settings-row">
           <div class="settings-copy">
+            <strong>Modo de pruebas</strong>
+            <span>Permite a un adulto abrir cualquier misión sin modificar el progreso real de Emiliano.</span>
+          </div>
+          <button id="testerSettingsBtn" class="settings-toggle" type="button">🧪 Abrir</button>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <div class="settings-row">
+          <div class="settings-copy">
             <strong>Módulo de cuaderno</strong>
             <span>Vuelve a la última división escrita o reinicia solo este módulo.</span>
           </div>
@@ -353,6 +363,79 @@
         </div>
 
         <p class="settings-warning">Esta opción borra el progreso de Emiliano en este dispositivo.</p>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="testerModal" class="modal" hidden>
+    <div class="modal-card tester-modal-card" role="dialog" aria-modal="true" aria-labelledby="testerTitle">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">SOLO ADULTOS</p>
+          <h2 id="testerTitle">Modo de pruebas</h2>
+        </div>
+        <button id="closeTesterBtn" class="icon-btn" aria-label="Cerrar modo de pruebas">✕</button>
+      </div>
+
+      <div id="testerAuthView" class="tester-auth">
+        <div class="tester-lock">🔐</div>
+        <h3>Ingresa la clave</h3>
+        <p>Este panel permite saltar entre misiones para revisar y probar la app.</p>
+
+        <form id="testerPinForm" class="tester-pin-form">
+          <label for="testerPinInput">Clave de acceso</label>
+          <div class="tester-pin-row">
+            <input
+              id="testerPinInput"
+              type="password"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="6"
+              pattern="[0-9]*"
+              placeholder="••••••"
+              aria-describedby="testerPinError"
+            />
+            <button type="submit" class="primary-btn tester-unlock-btn">Entrar</button>
+          </div>
+          <p id="testerPinError" class="tester-pin-error" hidden>La clave no es correcta.</p>
+        </form>
+      </div>
+
+      <div id="testerNavigatorView" class="tester-navigator" hidden>
+        <div class="tester-active-banner">
+          <span>🧪</span>
+          <div>
+            <strong>Modo de pruebas activo</strong>
+            <small>Lo que hagas aquí no cambia el progreso guardado de Emiliano.</small>
+          </div>
+        </div>
+
+        <section class="tester-section">
+          <div class="tester-section-head">
+            <div>
+              <span>AVENTURA 1</span>
+              <h3>Atlas Animal</h3>
+            </div>
+            <b>36 misiones</b>
+          </div>
+          <div id="testerMissionGrid" class="tester-mission-grid"></div>
+        </section>
+
+        <section class="tester-section">
+          <div class="tester-section-head">
+            <div>
+              <span>AVENTURA 2</span>
+              <h3>Dividir en mi cuaderno</h3>
+            </div>
+            <b>12 misiones</b>
+          </div>
+          <div id="testerNotebookGrid" class="tester-mission-grid"></div>
+        </section>
+
+        <button id="exitTesterModeBtn" class="tester-exit-btn" type="button">
+          Salir del modo de pruebas y volver al progreso real
+        </button>
       </div>
     </div>
   </div>
