@@ -193,13 +193,18 @@
         </div>
       </div>
 
-      <section class="procedure-strip" aria-label="Pasos de la división">
-        <div class="procedure-step" data-procedure="observe"><span>👀</span><strong>MIRO</strong></div>
-        <div class="procedure-step" data-procedure="divide"><span>➗</span><strong>DIVIDO</strong></div>
-        <div class="procedure-step" data-procedure="multiply"><span>✖️</span><strong>MULTIPLICO</strong></div>
-        <div class="procedure-step" data-procedure="subtract"><span>➖</span><strong>RESTO</strong></div>
-        <div class="procedure-step" data-procedure="bring"><span>⬇️</span><strong>BAJO</strong></div>
-        <div class="procedure-step" data-procedure="repeat"><span>🔁</span><strong>REPITO</strong></div>
+      <section class="procedure-guide-card" aria-label="Regla de NOVA para dividir">
+        <div class="procedure-guide-title">
+          <span>LA REGLA DE NOVA</span>
+          <strong>Haz siempre el mismo ciclo</strong>
+        </div>
+        <section class="procedure-strip" aria-label="Pasos de la división">
+          <div class="procedure-step" data-procedure="divide"><span>➗</span><strong>DIVIDO</strong><small>¿Cuántas veces cabe?</small></div>
+          <div class="procedure-step" data-procedure="multiply"><span>✖️</span><strong>MULTIPLICO</strong><small>¿Cuánto usé?</small></div>
+          <div class="procedure-step" data-procedure="subtract"><span>➖</span><strong>RESTO</strong><small>¿Cuánto quedó?</small></div>
+          <div class="procedure-step" data-procedure="bring"><span>⬇️</span><strong>BAJO</strong><small>Traigo otra cifra</small></div>
+          <div class="procedure-step" data-procedure="repeat"><span>🔁</span><strong>REPITO</strong><small>Vuelvo a dividir</small></div>
+        </section>
       </section>
 
       <section class="paper-layout-card">
@@ -219,6 +224,12 @@
         </div>
 
         <p id="placementHelp" class="placement-help" hidden></p>
+
+        <div class="cycle-summary">
+          <span>CICLO ACTUAL</span>
+          <strong id="notebookCycleLabel">Preparando la división</strong>
+        </div>
+
         <div id="notebookJournal" class="notebook-journal"></div>
       </section>
 

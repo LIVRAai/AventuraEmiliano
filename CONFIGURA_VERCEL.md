@@ -65,3 +65,17 @@ En **⚙️ Configuración → Modo de pruebas** hay un panel para adultos.
 - Usa **Salir del modo de pruebas y volver al progreso real** para restaurar la partida previa.
 
 > Nota: la clave está implementada en el frontend y sirve como bloqueo práctico dentro de la app; no debe considerarse seguridad fuerte frente a alguien con acceso al código fuente.
+
+## Versión 6.2 — ciclo real de división larga
+
+El módulo **Dividir en mi cuaderno** ahora enseña explícitamente este ciclo:
+
+`DIVIDO → MULTIPLICO → RESTO → BAJO → REPITO`
+
+Cambios:
+- `MIRO` ya no se presenta como parte del algoritmo.
+- La división se calcula cifra por cifra.
+- Al bajar una cifra, el siguiente ciclo comienza con el residuo + la cifra bajada; nunca vuelve a usar el dividendo completo.
+- Se agregó un paso explícito **REPITO** antes de volver a **DIVIDO**.
+- El historial del cuaderno muestra cada vuelta del ciclo.
+- El modo de pruebas con clave `123456` se conserva.

@@ -91,6 +91,7 @@
   const notebookDividend = $('#notebookDividend');
   const notebookDivisor = $('#notebookDivisor');
   const notebookQuotient = $('#notebookQuotient');
+  const notebookCycleLabel = $('#notebookCycleLabel');
   const notebookJournal = $('#notebookJournal');
   const notebookStepTitle = $('#notebookStepTitle');
   const notebookStepCount = $('#notebookStepCount');
@@ -185,130 +186,167 @@
     let current = 0;
     let started = false;
     let quotient = '';
-    let position = 0;
+    let cycle = 0;
 
     steps.push({
       kind:'setup',
-      phase:'observe',
-      title:'Escribe la división',
-      why:`Antes de calcular necesitamos organizar ${dividend} y ${divisor} siempre de la misma manera.`,
-      forWhat:'Así podrás reconocer rápidamente cuál número vamos a dividir y entre cuánto lo dividimos.',
-      how:`En tu cuaderno escribe ${dividend} a la izquierda y ${divisor} a la derecha, usando la misma forma de división que ves en la pantalla.`,
-      prompt:'Cuando la tengas escrita en tu cuaderno, toca “Ya la escribí”.',
-      placement:`Escribe ${dividend} a la izquierda de la línea vertical y ${divisor} arriba, al lado derecho.`,
+      phase:'prepare',
+      cycle:0,
+      title:'Prepara la división en tu cuaderno',
+      why:`Antes de comenzar necesitamos colocar ${dividend} y ${divisor} en sus lugares.`,
+      forWhat:'Así podrás repetir siempre el mismo procedimiento sin perderte.',
+      how:`Copia ${dividend} y ${divisor} usando la misma forma de división que ves en la pantalla.`,
+      prompt:'Cuando la tengas escrita, toca “Ya la escribí”.',
+      placement:`Copia la operación ${dividend} ÷ ${divisor} con el mismo formato del modelo.`,
       confirm:true
     });
 
     for (let i = 0; i < digits.length; i++) {
       current = current * 10 + digits[i];
 
+      // Antes de iniciar el primer ciclo, identificamos la primera parte
+      // del dividendo que puede dividirse. Esto NO es un paso del ciclo.
       if (!started && current < divisor && i < digits.length - 1) {
-        const nextCombined = current * 10 + digits[i+1];
+        const nextCombined = current * 10 + digits[i + 1];
+
         steps.push({
           kind:'observe',
-          phase:'observe',
-          title:'Mira con qué parte puedes empezar',
-          why:`No podemos formar un grupo completo de ${divisor} usando solo ${current}.`,
-          forWhat:`Necesitamos encontrar la primera parte de ${dividend} donde ${divisor} sí pueda caber al menos una vez.`,
-          how:`Mira también la siguiente cifra. Al juntar ${current} con ${digits[i+1]}, trabajarás con ${nextCombined}. No escribas todavía el resultado.`,
-          prompt:`En tu cuaderno señala ${nextCombined}. Ese será el primer número que vamos a dividir.`,
-          placement:`Todavía no escribas nada en el cociente. Solo identifica ${nextCombined} en el dividendo.`,
+          phase:'prepare',
+          cycle:0,
+          title:'Encuentra dónde empieza la división',
+          why:`Con ${current} todavía no podemos formar un grupo completo de ${divisor}.`,
+          forWhat:`Necesitamos encontrar la primera parte de ${dividend} donde ${divisor} sí quepa al menos una vez.`,
+          how:`Mira también la siguiente cifra. Así formarás ${nextCombined}. Ese será el primer número con el que trabajarás.`,
+          prompt:`Señala ${nextCombined} en tu cuaderno. Todavía no escribas nada en el cociente.`,
+          placement:`Solo identifica ${nextCombined} dentro del dividendo. El ciclo todavía no ha comenzado.`,
           confirm:true
         });
+
         continue;
       }
 
       started = true;
+      cycle += 1;
+
       const q = Math.floor(current / divisor);
       const product = q * divisor;
       const remainder = current - product;
       quotient += String(q);
-      position += 1;
 
+      // 1. DIVIDO
       steps.push({
         kind:'divide',
         phase:'divide',
-        title:'Ahora divide',
-        why:`Necesitamos saber cuántos grupos completos de ${divisor} caben dentro de ${current}.`,
-        forWhat:'Ese número será una cifra del resultado de la división.',
-        how:`Busca el número más grande que, multiplicado por ${divisor}, no se pase de ${current}. Cuando lo encuentres, escríbelo en el cociente.`,
+        cycle,
+        title:`Ciclo ${cycle}: DIVIDO`,
+        why:`Ahora estamos trabajando solamente con ${current}. Necesitamos saber cuántas veces cabe ${divisor} dentro de ese número.`,
+        forWhat:'La respuesta será la siguiente cifra del cociente.',
+        how:`Busca cuántas veces cabe ${divisor} en ${current} sin pasarte. Esa cifra se escribe arriba, en el cociente.`,
         prompt:`¿Cuántas veces cabe ${divisor} en ${current} sin pasarse?`,
         expected:q,
-        write:`Escribe ${q} en el cociente.`,
-        placement:`El ${q} va en el resultado, debajo de la línea horizontal del lado derecho.`,
+        write:`Escribe ${q} arriba, en el cociente.`,
+        placement:`El ${q} va arriba, alineado con la cifra del dividendo que acabas de trabajar.`,
         quotientAfter:quotient,
-        journal:`DIVIDO: ${current} ÷ ${divisor} → ${q}`
+        journal:`VUELTA ${cycle} · DIVIDO: ${current} ÷ ${divisor} = ${q}`
       });
 
+      // 2. MULTIPLICO
       steps.push({
         kind:'multiply',
         phase:'multiply',
-        title:'Multiplica lo que acabas de encontrar',
-        why:`El ${q} nos dice cuántos grupos de ${divisor} acabamos de formar.`,
-        forWhat:`Multiplicamos para saber exactamente cuánto de ${current} ya usamos.`,
-        how:`Multiplica ${q} × ${divisor}. Escribe ese resultado debajo de ${current} en tu cuaderno, bien alineado.`,
+        cycle,
+        title:`Ciclo ${cycle}: MULTIPLICO`,
+        why:`Acabas de escribir ${q} porque ${divisor} cabe ${q} vez${q === 1 ? '' : 'es'} en ${current}.`,
+        forWhat:`Multiplicamos para saber cuánto de ${current} acabamos de usar.`,
+        how:`Calcula ${q} × ${divisor}. Escribe ${product} debajo de ${current}, alineando las unidades.`,
         prompt:`¿Cuánto es ${q} × ${divisor}?`,
         expected:product,
         write:`Escribe ${product} debajo de ${current}.`,
-        placement:`El ${product} se escribe debajo de ${current}, alineando las unidades.`,
+        placement:`El ${product} va debajo de ${current}, porque representa la cantidad que acabas de usar.`,
         quotientAfter:quotient,
-        journal:`MULTIPLICO: ${q} × ${divisor} = ${product}`
+        journal:`VUELTA ${cycle} · MULTIPLICO: ${q} × ${divisor} = ${product}`
       });
 
+      // 3. RESTO
       steps.push({
         kind:'subtract',
         phase:'subtract',
-        title:'Resta para saber cuánto queda',
-        why:`Ya usamos ${product} de los ${current} que estábamos trabajando.`,
-        forWhat:'La resta nos muestra si quedó alguna cantidad sin usar antes de continuar.',
-        how:`Traza la resta en tu cuaderno y calcula ${current} − ${product}. Escribe el resultado debajo.`,
-        prompt:`¿Cuánto queda al restar ${current} − ${product}?`,
+        cycle,
+        title:`Ciclo ${cycle}: RESTO`,
+        why:`De los ${current} que teníamos, ya usamos ${product}.`,
+        forWhat:'Restamos para descubrir cuánto quedó sin usar.',
+        how:`Haz la resta ${current} − ${product} en tu cuaderno y escribe ${remainder} debajo.`,
+        prompt:`¿Cuánto es ${current} − ${product}?`,
         expected:remainder,
-        write:`Escribe ${remainder} debajo de la resta.`,
-        placement:`El ${remainder} va debajo de ${product}, como resultado de la resta.`,
+        write:`Escribe ${remainder} como resultado de la resta.`,
+        placement:`El ${remainder} va debajo de la resta. Es lo que quedó después de usar ${product}.`,
         quotientAfter:quotient,
-        journal:`RESTO: ${current} − ${product} = ${remainder}`
+        journal:`VUELTA ${cycle} · RESTO: ${current} − ${product} = ${remainder}`
       });
 
       if (i < digits.length - 1) {
-        const nextDigit = digits[i+1];
+        const nextDigit = digits[i + 1];
         const nextCurrent = remainder * 10 + nextDigit;
+
+        // 4. BAJO
         steps.push({
           kind:'bring',
           phase:'bring',
-          title:'Baja la siguiente cifra',
-          why:`Todavía queda la cifra ${nextDigit} de ${dividend} por trabajar.`,
-          forWhat:`La bajamos para unirla con lo que quedó y formar el siguiente número que vamos a dividir.`,
-          how:`Baja el ${nextDigit} en tu cuaderno y colócalo a la derecha del ${remainder}. Ahora tendrás ${nextCurrent}.`,
-          prompt:`Cuando hayas bajado el ${nextDigit} y veas ${nextCurrent} en tu cuaderno, toca “Ya lo hice”.`,
-          placement:`El ${nextDigit} baja desde el dividendo hasta quedar al lado del residuo ${remainder}.`,
+          cycle,
+          title:`Ciclo ${cycle}: BAJO`,
+          why:`Todavía queda la cifra ${nextDigit} del dividendo por trabajar.`,
+          forWhat:'La bajamos para unirla con lo que quedó y formar el siguiente número de trabajo.',
+          how:`Baja el ${nextDigit} y colócalo a la derecha del ${remainder}. Ahora tendrás ${nextCurrent}.`,
+          prompt:`Cuando en tu cuaderno veas ${nextCurrent}, toca “Ya lo hice”.`,
+          placement:`Baja el ${nextDigit} hasta dejarlo a la derecha del residuo ${remainder}.`,
           confirm:true,
           quotientAfter:quotient,
-          journal:`BAJO: ${nextDigit} → ahora trabajo con ${nextCurrent}`
+          journal:`VUELTA ${cycle} · BAJO: ${nextDigit} → ahora tengo ${nextCurrent}`
         });
+
+        // 5. REPITO
+        steps.push({
+          kind:'repeat',
+          phase:'repeat',
+          cycle,
+          title:`Ciclo ${cycle}: REPITO`,
+          why:`Ya formaste un nuevo número: ${nextCurrent}.`,
+          forWhat:'Ahora comienza otra vuelta exactamente igual. No cambia el procedimiento.',
+          how:'Vuelve al primer paso de la regla de NOVA: DIVIDO.',
+          prompt:`Di en voz baja: “Divido, multiplico, resto, bajo y repito”. Después toca “Volver a DIVIDIR”.`,
+          placement:`Tu siguiente número de trabajo es ${nextCurrent}. No uses de nuevo ${dividend} completo.`,
+          confirm:true,
+          quotientAfter:quotient,
+          journal:`↻ REPITO · La siguiente vuelta empieza con ${nextCurrent}`
+        });
+
+        // CRÍTICO: el siguiente ciclo debe comenzar con el residuo.
+        // En la siguiente iteración se añadirá la cifra que acabamos de bajar.
+        current = remainder;
       } else {
         steps.push({
           kind:'finish',
-          phase:'repeat',
-          title:'Mira cómo termina la división',
+          phase:'finish',
+          cycle,
+          title:'Terminamos la división',
           why: remainder === 0
-            ? 'Ya no quedan cifras por bajar y la resta terminó en 0.'
-            : `Ya no quedan cifras por bajar y todavía quedó ${remainder}.`,
+            ? 'Ya no quedan cifras por bajar y la última resta terminó en 0.'
+            : `Ya no quedan cifras por bajar y quedó ${remainder}.`,
           forWhat: remainder === 0
             ? 'Eso nos confirma que la división es exacta.'
-            : `Eso nos indica que ${remainder} es el residuo: la cantidad que no alcanzó para formar otro grupo completo de ${divisor}.`,
+            : `Ese ${remainder} es el residuo: ya no alcanza para formar otro grupo completo de ${divisor}.`,
           how: remainder === 0
-            ? `Lee el cociente completo: ${Math.floor(dividend/divisor)}. En tu cuaderno revisa que el último residuo sea 0.`
-            : `Escribe el residuo ${remainder} al final y lee el cociente ${Math.floor(dividend/divisor)} con residuo ${remainder}.`,
-          prompt:'Compara tu cuaderno con todo lo que hiciste. Cuando esté listo, toca “Terminé la división”.',
-          placement:'Revisa que cada cifra esté alineada y que el cociente quede en el lado derecho, debajo de la línea.',
+            ? `Lee el cociente completo: ${quotient}. Revisa en tu cuaderno que el último residuo sea 0.`
+            : `Lee el cociente ${quotient} y registra el residuo ${remainder}.`,
+          prompt:'Compara tu cuaderno con el procedimiento. Cuando esté listo, toca “Terminé la división”.',
+          placement:'Revisa el cociente y que cada multiplicación, resta y cifra bajada esté alineada.',
           confirm:true,
           final:true,
-          quotientAfter:String(Math.floor(dividend/divisor)),
+          quotientAfter:quotient,
           remainder,
           journal: remainder === 0
-            ? `RESULTADO: ${dividend} ÷ ${divisor} = ${Math.floor(dividend/divisor)}`
-            : `RESULTADO: ${dividend} ÷ ${divisor} = ${Math.floor(dividend/divisor)} y sobra ${remainder}`
+            ? `RESULTADO: ${dividend} ÷ ${divisor} = ${quotient}`
+            : `RESULTADO: ${dividend} ÷ ${divisor} = ${quotient} y sobra ${remainder}`
         });
       }
     }
@@ -331,19 +369,42 @@
   }
 
   function updateProcedureStrip(step) {
-    const order = ['observe','divide','multiply','subtract','bring','repeat'];
+    const order = ['divide','multiply','subtract','bring','repeat'];
     const currentIdx = order.indexOf(step.phase);
+
     document.querySelectorAll('.procedure-step').forEach((el, idx) => {
+      const finished = step.phase === 'finish';
       el.classList.toggle('active', idx === currentIdx);
-      el.classList.toggle('done', idx < currentIdx && currentIdx >= 0);
+      el.classList.toggle('done', finished || (currentIdx >= 0 && idx < currentIdx));
     });
+
+    if (notebookCycleLabel) {
+      if (step.phase === 'prepare') {
+        notebookCycleLabel.textContent = 'Antes del ciclo: identifica dónde empezar';
+      } else if (step.phase === 'finish') {
+        notebookCycleLabel.textContent = 'Ciclo completo · división terminada';
+      } else if (step.phase === 'repeat') {
+        notebookCycleLabel.textContent = `Vuelta ${step.cycle}: REPITO → vuelvo a DIVIDIR`;
+      } else {
+        notebookCycleLabel.textContent = `Vuelta ${step.cycle}: ${String(step.phase || '').toUpperCase()}`;
+      }
+    }
   }
 
   function renderNotebookJournal() {
     notebookJournal.innerHTML = '';
-    notebookJournalLines.slice(-6).forEach(line => {
+
+    const visible = notebookJournalLines.slice(-5);
+    if (!visible.length) return;
+
+    const title = document.createElement('div');
+    title.className = 'journal-title';
+    title.textContent = 'LO QUE YA HICISTE EN EL CUADERNO';
+    notebookJournal.appendChild(title);
+
+    visible.forEach(line => {
       const div = document.createElement('div');
-      div.className = 'journal-line';
+      div.className = line.startsWith('↻') ? 'journal-line journal-repeat' : 'journal-line';
       div.textContent = line;
       notebookJournal.appendChild(div);
     });
@@ -417,7 +478,13 @@
       const btn = document.createElement('button');
       btn.className = 'notebook-confirm-btn';
       btn.type = 'button';
-      btn.textContent = step.final ? '✅ Terminé la división' : (step.kind === 'setup' ? '✏️ Ya la escribí' : '✅ Ya lo hice');
+      btn.textContent = step.final
+        ? '✅ Terminé la división'
+        : step.kind === 'setup'
+          ? '✏️ Ya la escribí'
+          : step.kind === 'repeat'
+            ? '🔁 Volver a DIVIDIR'
+            : '✅ Ya lo hice';
       btn.addEventListener('click', () => {
         playTap();
         if (step.journal) notebookJournalLines.push(step.journal);
@@ -439,8 +506,8 @@
     notebookLessonDone.hidden = false;
     notebookDoneTitle.textContent = `Terminaste ${lesson.dividend} ÷ ${lesson.divisor}`;
     notebookDoneFeedback.textContent = remainder === 0
-      ? `Recuerda la lógica: miraste qué parte podías dividir, encontraste cada cifra del cociente, multiplicaste para saber cuánto usaste, restaste para saber cuánto quedaba y bajaste la siguiente cifra. El resultado es ${quotient}.`
-      : `Recuerda la lógica: repetiste DIVIDIR, MULTIPLICAR, RESTAR y BAJAR hasta que no quedaron más cifras. El cociente es ${quotient} y el residuo es ${remainder}, porque esa cantidad ya no alcanza para formar otro grupo completo de ${lesson.divisor}.`;
+      ? `La regla fue siempre la misma: DIVIDO para saber cuántas veces cabe, MULTIPLICO para saber cuánto usé, RESTO para saber cuánto quedó, BAJO la siguiente cifra y REPITO. Al terminar no quedó residuo. El resultado es ${quotient}.`
+      : `La regla fue siempre la misma: DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. Cuando ya no quedaron cifras por bajar, quedó ${remainder}; por eso el cociente es ${quotient} y el residuo es ${remainder}.`;
 
     notebookCompletedLessons = Math.max(notebookCompletedLessons, notebookLessonIndex + 1);
     notebookProgressBar.style.width = `${Math.round((notebookCompletedLessons / notebookLessons.length) * 100)}%`;
@@ -2182,7 +2249,7 @@
       notebookCompletedLessons = notebookLessons.length;
       saveNotebookState();
       notebookDoneTitle.textContent = '¡Módulo de cuaderno completado!';
-      notebookDoneFeedback.textContent = 'Ya recorriste el procedimiento completo: MIRO, DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. Ahora la meta es practicarlo cada vez con menos ayuda de NOVA.';
+      notebookDoneFeedback.textContent = 'Ya recorriste el procedimiento completo: DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. Ahora la meta es practicarlo cada vez con menos ayuda de NOVA.';
       notebookNextBtn.textContent = 'Volver al Atlas';
       notebookNextBtn.onclick = () => closeNotebookModule();
       return;

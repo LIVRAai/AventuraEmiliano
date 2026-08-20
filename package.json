@@ -1,7 +1,7 @@
 {
   "name": "aventura-emiliano",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "private": true,
   "type": "module",
-  "description": "La Expedición de Emiliano - Atlas Animal, módulo de división en cuaderno, NOVA tutor y modo de pruebas protegido"
+  "description": "La Expedición de Emiliano - Atlas Animal, división en cuaderno con ciclo DIVIDO MULTIPLICO RESTO BAJO REPITO, NOVA y modo de pruebas"
 }

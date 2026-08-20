@@ -553,9 +553,32 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
 .notebook-hero p { margin:0;color:var(--muted);line-height:1.45; }
 .notebook-progress-wrap { margin:0 2px; }
 
+.procedure-guide-card {
+  padding:12px;
+  border-radius:22px;
+  background:rgba(255,255,255,.045);
+  border:1px solid rgba(255,255,255,.08);
+}
+.procedure-guide-title {
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:9px;
+}
+.procedure-guide-title span {
+  color:var(--cyan);
+  font-size:.58rem;
+  font-weight:1000;
+  letter-spacing:.11em;
+}
+.procedure-guide-title strong {
+  font-size:.79rem;
+  color:#f5f7ff;
+}
 .procedure-strip {
   display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
+  grid-template-columns:repeat(5,minmax(0,1fr));
   gap:7px;
 }
 .procedure-step {
@@ -574,6 +597,16 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
 }
 .procedure-step span { font-size:1.2rem; }
 .procedure-step strong { font-size:.53rem;letter-spacing:.06em; }
+.procedure-step small {
+  display:block;
+  max-width:100%;
+  color:#9ea9d8;
+  font-size:.46rem;
+  line-height:1.2;
+  text-align:center;
+}
+.procedure-step.active small { color:#fff2a6; }
+.procedure-step.done small { color:#b8f5d0; }
 .procedure-step.active {
   opacity:1;
   border-color:var(--yellow);
@@ -653,6 +686,28 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
   font-size:.82rem;
   line-height:1.45;
   font-weight:750;
+}
+.cycle-summary {
+  margin-top:12px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:#eef5ff;
+  border:1px solid rgba(22,32,68,.09);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.cycle-summary span {
+  color:#6d7898;
+  font-size:.55rem;
+  font-weight:1000;
+  letter-spacing:.09em;
+}
+.cycle-summary strong {
+  color:#344268;
+  font-size:.75rem;
+  text-align:right;
 }
 .notebook-journal {
   display:grid;gap:6px;margin-top:12px;
@@ -769,7 +824,7 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
 .notebook-done-card > p:not(.eyebrow) { color:var(--muted);line-height:1.5;max-width:590px;margin:0 auto 16px; }
 
 @media (max-width:700px) {
-  .procedure-strip { grid-template-columns:repeat(3,1fr); }
+  .procedure-strip { grid-template-columns:repeat(2,1fr); }
   .nova-three { grid-template-columns:1fr; }
 }
 @media (max-width:480px) {
@@ -1043,4 +1098,17 @@ footer { text-align:center;padding:20px 0 4px; }.text-btn { border:none;backgrou
   .tester-mission-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.journal-title {
+  margin-top:2px;
+  color:#6d7898;
+  font-size:.54rem;
+  font-weight:1000;
+  letter-spacing:.09em;
+}
+.journal-repeat {
+  background:#e9e4ff;
+  color:#51499a;
+  font-weight:900;
 }
