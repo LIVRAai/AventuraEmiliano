@@ -1,7 +1,7 @@
 {
   "name": "aventura-emiliano",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "private": true,
   "type": "module",
-  "description": "La Expedición de Emiliano - juego educativo de división con misiones variadas, progreso y NOVA como tutor"
+  "description": "La Expedición de Emiliano - aventura de división y módulo Dividir en mi cuaderno con NOVA"
 }

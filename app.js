@@ -66,6 +66,530 @@
   const novaFeedbackText = $('#novaFeedbackText');
   const nextTeaser = $('#nextTeaser');
   const rewardNextBtn = $('#rewardNextBtn');
+  const notebookStartBtn = $('#notebookStartBtn');
+  const notebookModule = $('#notebookModule');
+  const notebookBackBtn = $('#notebookBackBtn');
+  const notebookSettingsBtn = $('#notebookSettingsBtn');
+  const notebookLessonCounter = $('#notebookLessonCounter');
+  const notebookMissionLabel = $('#notebookMissionLabel');
+  const notebookTitle = $('#notebookTitle');
+  const notebookStory = $('#notebookStory');
+  const notebookAnimal = $('#notebookAnimal');
+  const notebookProgressBar = $('#notebookProgressBar');
+  const notebookProgressText = $('#notebookProgressText');
+  const notebookDividend = $('#notebookDividend');
+  const notebookDivisor = $('#notebookDivisor');
+  const notebookQuotient = $('#notebookQuotient');
+  const notebookJournal = $('#notebookJournal');
+  const notebookStepTitle = $('#notebookStepTitle');
+  const notebookStepCount = $('#notebookStepCount');
+  const notebookWhy = $('#notebookWhy');
+  const notebookForWhat = $('#notebookForWhat');
+  const notebookHow = $('#notebookHow');
+  const notebookPrompt = $('#notebookPrompt');
+  const notebookAnswerArea = $('#notebookAnswerArea');
+  const showPlacementBtn = $('#showPlacementBtn');
+  const placementHelp = $('#placementHelp');
+  const notebookHelpBtn = $('#notebookHelpBtn');
+  const notebookChat = $('#notebookChat');
+  const notebookChatMessages = $('#notebookChatMessages');
+  const notebookChatForm = $('#notebookChatForm');
+  const notebookChatInput = $('#notebookChatInput');
+  const notebookChatSend = $('#notebookChatSend');
+  const notebookLessonDone = $('#notebookLessonDone');
+  const notebookDoneTitle = $('#notebookDoneTitle');
+  const notebookDoneFeedback = $('#notebookDoneFeedback');
+  const notebookNextBtn = $('#notebookNextBtn');
+
+
+  const NOTEBOOK_SAVE_KEY = 'emilianoNotebookV1';
+
+  const notebookLessons = [
+    { dividend:84, divisor:4, animal:'🦥', title:'Las huellas del perezoso', story:'El perezoso guardó un código en tu cuaderno. NOVA te enseñará dónde va cada número.', focus:'Aprender el ciclo completo con dos cifras.' },
+    { dividend:96, divisor:3, animal:'🐬', title:'El código del delfín', story:'El delfín rosado dejó un segundo código. Esta vez repetiremos el mismo orden para que empiece a sentirse familiar.', focus:'Repetir DIVIDO → MULTIPLICO → RESTO → BAJO.' },
+    { dividend:68, divisor:2, animal:'🦎', title:'La ruta del gecko', story:'El gecko quiere comprobar que puedes mantener cada número en su lugar mientras avanzas.', focus:'Ubicación correcta del cociente y las restas.' },
+    { dividend:125, divisor:5, animal:'🦆', title:'El rastro del ornitorrinco', story:'Ahora aparece una división de tres cifras. El procedimiento no cambia: lo repetimos una vez más.', focus:'Trabajar con tres cifras.' },
+    { dividend:248, divisor:4, animal:'🦦', title:'Las piedras de la nutria', story:'La nutria encontró una división más larga. Tu cuaderno será el mapa para no perder ningún paso.', focus:'Repetir el ciclo varias veces.' },
+    { dividend:156, divisor:12, animal:'🦈', title:'El primer divisor de dos cifras', story:'El tiburón duende trae un nuevo reto: ahora el divisor tiene dos cifras, pero la lógica sigue siendo la misma.', focus:'Divisor de dos cifras.' },
+    { dividend:144, divisor:12, animal:'🦀', title:'La señal del cangrejo yeti', story:'El cangrejo yeti quiere que compruebes que también puedes escribir divisiones exactas con divisores de dos cifras.', focus:'Consolidar divisor de dos cifras.' },
+    { dividend:3225, divisor:25, animal:'🔬', title:'El desafío del tardígrado', story:'Llegó el código que Emiliano estaba practicando: 3225 dividido entre 25. Lo haremos despacio y completamente en el cuaderno.', focus:'Procedimiento largo completo.' },
+    { dividend:17, divisor:5, animal:'🦊', title:'Cuando queda algo', story:'El fénec encontró un reparto que no termina exactamente. NOVA te mostrará cómo registrar lo que sobra.', focus:'Introducción al residuo.', allowRemainder:true },
+    { dividend:43, divisor:4, animal:'🐧', title:'El residuo del pingüino', story:'Otro código deja una cantidad sin repartir. Vamos a practicar cómo reconocerla y escribirla.', focus:'Consolidar residuo.', allowRemainder:true },
+    { dividend:408, divisor:4, animal:'🐙', title:'El cero del pulpo Dumbo', story:'Esta división es especial porque aparece un cero dentro del procedimiento. Ese cero también tiene un lugar en el cociente.', focus:'Aprender cuándo escribir 0 en el cociente.' },
+    { dividend:936, divisor:6, animal:'🏆', title:'Código maestro del cuaderno', story:'Último reto del módulo. NOVA seguirá explicando la lógica, pero tú llevarás todo el procedimiento en tu cuaderno.', focus:'Integrar todo el algoritmo.' }
+  ];
+
+  let notebookLessonIndex = 0;
+  let notebookStepIndex = 0;
+  let notebookSteps = [];
+  let notebookCompletedLessons = 0;
+  let notebookRevealedQuotient = '';
+  let notebookJournalLines = [];
+  let notebookChatHistory = [];
+
+  function readNotebookState() {
+    try {
+      const raw = localStorage.getItem(NOTEBOOK_SAVE_KEY);
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      if (!data || typeof data !== 'object') return null;
+      return data;
+    } catch {
+      return null;
+    }
+  }
+
+  function saveNotebookState() {
+    try {
+      localStorage.setItem(NOTEBOOK_SAVE_KEY, JSON.stringify({
+        lesson: notebookLessonIndex,
+        step: notebookStepIndex,
+        completed: notebookCompletedLessons,
+        quotient: notebookRevealedQuotient,
+        journal: notebookJournalLines.slice(-20),
+        chat: notebookChatHistory.slice(-12),
+        savedAt: Date.now()
+      }));
+    } catch {}
+  }
+
+  function resetNotebookState() {
+    notebookLessonIndex = 0;
+    notebookStepIndex = 0;
+    notebookCompletedLessons = 0;
+    notebookRevealedQuotient = '';
+    notebookJournalLines = [];
+    notebookChatHistory = [];
+    localStorage.removeItem(NOTEBOOK_SAVE_KEY);
+  }
+
+  function buildLongDivisionSteps(dividend, divisor) {
+    const digits = String(dividend).split('').map(Number);
+    const steps = [];
+    let current = 0;
+    let started = false;
+    let quotient = '';
+    let position = 0;
+
+    steps.push({
+      kind:'setup',
+      phase:'observe',
+      title:'Escribe la división',
+      why:`Antes de calcular necesitamos organizar ${dividend} y ${divisor} siempre de la misma manera.`,
+      forWhat:'Así podrás reconocer rápidamente cuál número vamos a dividir y entre cuánto lo dividimos.',
+      how:`En tu cuaderno escribe ${dividend} a la izquierda y ${divisor} a la derecha, usando la misma forma de división que ves en la pantalla.`,
+      prompt:'Cuando la tengas escrita en tu cuaderno, toca “Ya la escribí”.',
+      placement:`Escribe ${dividend} a la izquierda de la línea vertical y ${divisor} arriba, al lado derecho.`,
+      confirm:true
+    });
+
+    for (let i = 0; i < digits.length; i++) {
+      current = current * 10 + digits[i];
+
+      if (!started && current < divisor && i < digits.length - 1) {
+        const nextCombined = current * 10 + digits[i+1];
+        steps.push({
+          kind:'observe',
+          phase:'observe',
+          title:'Mira con qué parte puedes empezar',
+          why:`No podemos formar un grupo completo de ${divisor} usando solo ${current}.`,
+          forWhat:`Necesitamos encontrar la primera parte de ${dividend} donde ${divisor} sí pueda caber al menos una vez.`,
+          how:`Mira también la siguiente cifra. Al juntar ${current} con ${digits[i+1]}, trabajarás con ${nextCombined}. No escribas todavía el resultado.`,
+          prompt:`En tu cuaderno señala ${nextCombined}. Ese será el primer número que vamos a dividir.`,
+          placement:`Todavía no escribas nada en el cociente. Solo identifica ${nextCombined} en el dividendo.`,
+          confirm:true
+        });
+        continue;
+      }
+
+      started = true;
+      const q = Math.floor(current / divisor);
+      const product = q * divisor;
+      const remainder = current - product;
+      quotient += String(q);
+      position += 1;
+
+      steps.push({
+        kind:'divide',
+        phase:'divide',
+        title:'Ahora divide',
+        why:`Necesitamos saber cuántos grupos completos de ${divisor} caben dentro de ${current}.`,
+        forWhat:'Ese número será una cifra del resultado de la división.',
+        how:`Busca el número más grande que, multiplicado por ${divisor}, no se pase de ${current}. Cuando lo encuentres, escríbelo en el cociente.`,
+        prompt:`¿Cuántas veces cabe ${divisor} en ${current} sin pasarse?`,
+        expected:q,
+        write:`Escribe ${q} en el cociente.`,
+        placement:`El ${q} va en el resultado, debajo de la línea horizontal del lado derecho.`,
+        quotientAfter:quotient,
+        journal:`DIVIDO: ${current} ÷ ${divisor} → ${q}`
+      });
+
+      steps.push({
+        kind:'multiply',
+        phase:'multiply',
+        title:'Multiplica lo que acabas de encontrar',
+        why:`El ${q} nos dice cuántos grupos de ${divisor} acabamos de formar.`,
+        forWhat:`Multiplicamos para saber exactamente cuánto de ${current} ya usamos.`,
+        how:`Multiplica ${q} × ${divisor}. Escribe ese resultado debajo de ${current} en tu cuaderno, bien alineado.`,
+        prompt:`¿Cuánto es ${q} × ${divisor}?`,
+        expected:product,
+        write:`Escribe ${product} debajo de ${current}.`,
+        placement:`El ${product} se escribe debajo de ${current}, alineando las unidades.`,
+        quotientAfter:quotient,
+        journal:`MULTIPLICO: ${q} × ${divisor} = ${product}`
+      });
+
+      steps.push({
+        kind:'subtract',
+        phase:'subtract',
+        title:'Resta para saber cuánto queda',
+        why:`Ya usamos ${product} de los ${current} que estábamos trabajando.`,
+        forWhat:'La resta nos muestra si quedó alguna cantidad sin usar antes de continuar.',
+        how:`Traza la resta en tu cuaderno y calcula ${current} − ${product}. Escribe el resultado debajo.`,
+        prompt:`¿Cuánto queda al restar ${current} − ${product}?`,
+        expected:remainder,
+        write:`Escribe ${remainder} debajo de la resta.`,
+        placement:`El ${remainder} va debajo de ${product}, como resultado de la resta.`,
+        quotientAfter:quotient,
+        journal:`RESTO: ${current} − ${product} = ${remainder}`
+      });
+
+      if (i < digits.length - 1) {
+        const nextDigit = digits[i+1];
+        const nextCurrent = remainder * 10 + nextDigit;
+        steps.push({
+          kind:'bring',
+          phase:'bring',
+          title:'Baja la siguiente cifra',
+          why:`Todavía queda la cifra ${nextDigit} de ${dividend} por trabajar.`,
+          forWhat:`La bajamos para unirla con lo que quedó y formar el siguiente número que vamos a dividir.`,
+          how:`Baja el ${nextDigit} en tu cuaderno y colócalo a la derecha del ${remainder}. Ahora tendrás ${nextCurrent}.`,
+          prompt:`Cuando hayas bajado el ${nextDigit} y veas ${nextCurrent} en tu cuaderno, toca “Ya lo hice”.`,
+          placement:`El ${nextDigit} baja desde el dividendo hasta quedar al lado del residuo ${remainder}.`,
+          confirm:true,
+          quotientAfter:quotient,
+          journal:`BAJO: ${nextDigit} → ahora trabajo con ${nextCurrent}`
+        });
+      } else {
+        steps.push({
+          kind:'finish',
+          phase:'repeat',
+          title:'Mira cómo termina la división',
+          why: remainder === 0
+            ? 'Ya no quedan cifras por bajar y la resta terminó en 0.'
+            : `Ya no quedan cifras por bajar y todavía quedó ${remainder}.`,
+          forWhat: remainder === 0
+            ? 'Eso nos confirma que la división es exacta.'
+            : `Eso nos indica que ${remainder} es el residuo: la cantidad que no alcanzó para formar otro grupo completo de ${divisor}.`,
+          how: remainder === 0
+            ? `Lee el cociente completo: ${Math.floor(dividend/divisor)}. En tu cuaderno revisa que el último residuo sea 0.`
+            : `Escribe el residuo ${remainder} al final y lee el cociente ${Math.floor(dividend/divisor)} con residuo ${remainder}.`,
+          prompt:'Compara tu cuaderno con todo lo que hiciste. Cuando esté listo, toca “Terminé la división”.',
+          placement:'Revisa que cada cifra esté alineada y que el cociente quede en el lado derecho, debajo de la línea.',
+          confirm:true,
+          final:true,
+          quotientAfter:String(Math.floor(dividend/divisor)),
+          remainder,
+          journal: remainder === 0
+            ? `RESULTADO: ${dividend} ÷ ${divisor} = ${Math.floor(dividend/divisor)}`
+            : `RESULTADO: ${dividend} ÷ ${divisor} = ${Math.floor(dividend/divisor)} y sobra ${remainder}`
+        });
+      }
+    }
+
+    return steps;
+  }
+
+  function currentNotebookLesson() {
+    return notebookLessons[Math.max(0, Math.min(notebookLessons.length - 1, notebookLessonIndex))];
+  }
+
+  function currentNotebookStep() {
+    return notebookSteps[Math.max(0, Math.min(notebookSteps.length - 1, notebookStepIndex))];
+  }
+
+  function notebookProgressPercent() {
+    const lessonPart = notebookLessonIndex / notebookLessons.length;
+    const stepPart = notebookSteps.length ? (notebookStepIndex / notebookSteps.length) / notebookLessons.length : 0;
+    return Math.round(Math.min(1, lessonPart + stepPart) * 100);
+  }
+
+  function updateProcedureStrip(step) {
+    const order = ['observe','divide','multiply','subtract','bring','repeat'];
+    const currentIdx = order.indexOf(step.phase);
+    document.querySelectorAll('.procedure-step').forEach((el, idx) => {
+      el.classList.toggle('active', idx === currentIdx);
+      el.classList.toggle('done', idx < currentIdx && currentIdx >= 0);
+    });
+  }
+
+  function renderNotebookJournal() {
+    notebookJournal.innerHTML = '';
+    notebookJournalLines.slice(-6).forEach(line => {
+      const div = document.createElement('div');
+      div.className = 'journal-line';
+      div.textContent = line;
+      notebookJournal.appendChild(div);
+    });
+  }
+
+  function setNotebookQuotient(step) {
+    if (step?.quotientAfter != null) notebookRevealedQuotient = String(step.quotientAfter);
+    notebookQuotient.textContent = notebookRevealedQuotient || '?';
+  }
+
+  function renderNotebookStep() {
+    const lesson = currentNotebookLesson();
+    const step = currentNotebookStep();
+    if (!lesson || !step) return;
+
+    notebookLessonDone.hidden = true;
+    notebookLessonCounter.textContent = `${notebookLessonIndex + 1} / ${notebookLessons.length}`;
+    notebookMissionLabel.textContent = `MISIÓN ${notebookLessonIndex + 1} · ${lesson.focus.toUpperCase()}`;
+    notebookTitle.textContent = lesson.title;
+    notebookStory.textContent = lesson.story;
+    notebookAnimal.textContent = lesson.animal;
+    notebookDividend.textContent = lesson.dividend;
+    notebookDivisor.textContent = lesson.divisor;
+    notebookProgressBar.style.width = `${notebookProgressPercent()}%`;
+    notebookProgressText.textContent = `${notebookProgressPercent()}%`;
+
+    notebookStepTitle.textContent = step.title;
+    notebookStepCount.textContent = `PASO ${notebookStepIndex + 1} / ${notebookSteps.length}`;
+    notebookWhy.textContent = step.why;
+    notebookForWhat.textContent = step.forWhat;
+    notebookHow.textContent = step.how;
+    notebookPrompt.textContent = step.prompt;
+    placementHelp.hidden = true;
+    placementHelp.textContent = step.placement || 'Copia la ubicación que ves en el modelo.';
+    updateProcedureStrip(step);
+    setNotebookQuotient(step);
+    renderNotebookJournal();
+
+    notebookAnswerArea.innerHTML = '';
+
+    if (step.expected != null) {
+      const form = document.createElement('form');
+      form.className = 'notebook-number-form';
+      form.innerHTML = `
+        <input inputmode="numeric" pattern="[0-9]*" aria-label="Respuesta del paso" placeholder="Escribe el número que obtuviste" />
+        <button type="submit">Comprobar</button>
+      `;
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = form.querySelector('input');
+        const value = Number(String(input.value).trim());
+        if (!Number.isFinite(value)) {
+          showToast('Escribe el número que obtuviste en tu cuaderno.');
+          return;
+        }
+        if (value !== step.expected) {
+          playOops();
+          showToast(`Revisa este paso con NOVA. Piensa en el por qué y vuelve a calcular.`, 2600);
+          input.select();
+          return;
+        }
+        playSuccess();
+        if (step.journal) notebookJournalLines.push(step.journal);
+        if (step.quotientAfter != null) notebookRevealedQuotient = String(step.quotientAfter);
+        showToast(step.write || 'Ese paso quedó listo en tu cuaderno.', 1800);
+        advanceNotebookStep();
+      });
+      notebookAnswerArea.appendChild(form);
+      setTimeout(() => form.querySelector('input')?.focus({preventScroll:true}), 60);
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'notebook-confirm-btn';
+      btn.type = 'button';
+      btn.textContent = step.final ? '✅ Terminé la división' : (step.kind === 'setup' ? '✏️ Ya la escribí' : '✅ Ya lo hice');
+      btn.addEventListener('click', () => {
+        playTap();
+        if (step.journal) notebookJournalLines.push(step.journal);
+        if (step.quotientAfter != null) notebookRevealedQuotient = String(step.quotientAfter);
+        advanceNotebookStep();
+      });
+      notebookAnswerArea.appendChild(btn);
+    }
+
+    saveNotebookState();
+  }
+
+  function showNotebookLessonDone() {
+    const lesson = currentNotebookLesson();
+    const lastStep = notebookSteps[notebookSteps.length - 1];
+    const quotient = Math.floor(lesson.dividend / lesson.divisor);
+    const remainder = lesson.dividend % lesson.divisor;
+
+    notebookLessonDone.hidden = false;
+    notebookDoneTitle.textContent = `Terminaste ${lesson.dividend} ÷ ${lesson.divisor}`;
+    notebookDoneFeedback.textContent = remainder === 0
+      ? `Recuerda la lógica: miraste qué parte podías dividir, encontraste cada cifra del cociente, multiplicaste para saber cuánto usaste, restaste para saber cuánto quedaba y bajaste la siguiente cifra. El resultado es ${quotient}.`
+      : `Recuerda la lógica: repetiste DIVIDIR, MULTIPLICAR, RESTAR y BAJAR hasta que no quedaron más cifras. El cociente es ${quotient} y el residuo es ${remainder}, porque esa cantidad ya no alcanza para formar otro grupo completo de ${lesson.divisor}.`;
+
+    notebookCompletedLessons = Math.max(notebookCompletedLessons, notebookLessonIndex + 1);
+    notebookProgressBar.style.width = `${Math.round((notebookCompletedLessons / notebookLessons.length) * 100)}%`;
+    notebookProgressText.textContent = `${Math.round((notebookCompletedLessons / notebookLessons.length) * 100)}%`;
+    notebookNextBtn.textContent = notebookLessonIndex === notebookLessons.length - 1
+      ? '🏆 Terminar módulo'
+      : 'Siguiente división →';
+    saveNotebookState();
+    notebookLessonDone.scrollIntoView({behavior:'smooth', block:'nearest'});
+    playSuccess();
+  }
+
+  function advanceNotebookStep() {
+    const step = currentNotebookStep();
+    if (step?.final || notebookStepIndex >= notebookSteps.length - 1) {
+      showNotebookLessonDone();
+      return;
+    }
+    notebookStepIndex += 1;
+    renderNotebookStep();
+  }
+
+  function startNotebookLesson(index, restore = false) {
+    notebookLessonIndex = Math.max(0, Math.min(notebookLessons.length - 1, index));
+    const lesson = currentNotebookLesson();
+    notebookSteps = buildLongDivisionSteps(lesson.dividend, lesson.divisor);
+
+    if (!restore) {
+      notebookStepIndex = 0;
+      notebookRevealedQuotient = '';
+      notebookJournalLines = [];
+      notebookChatHistory = [];
+    } else {
+      notebookStepIndex = Math.max(0, Math.min(notebookSteps.length - 1, notebookStepIndex));
+    }
+
+    notebookChat.hidden = true;
+    notebookChatMessages.innerHTML = `
+      <div class="tutor-message nova-message">
+        <span>NOVA</span>
+        <p>Pregúntame, yo puedo ayudarte con este paso.</p>
+      </div>
+    `;
+    notebookChatHistory.forEach(item => appendNotebookChatMessage(item.role, item.content));
+
+    renderNotebookStep();
+    saveNotebookState();
+  }
+
+  function openNotebookModule() {
+    if (!gameCompleted && unlockedCount() < missions.length) {
+      showToast('Primero completa el Atlas Animal para desbloquear el módulo de cuaderno ✏️', 2800);
+      return;
+    }
+
+    playTap();
+    finalCard.hidden = true;
+    rewardCard.hidden = true;
+    gameArea.hidden = true;
+    document.querySelector('.actions').hidden = true;
+    document.querySelector('.progress-wrap').hidden = true;
+    document.querySelector('.hero-card').hidden = true;
+    document.querySelector('.world-strip').hidden = true;
+    aiTutorCard.hidden = true;
+    notebookModule.hidden = false;
+
+    const saved = readNotebookState();
+    if (saved) {
+      notebookLessonIndex = Math.max(0, Math.min(notebookLessons.length - 1, Number(saved.lesson) || 0));
+      notebookStepIndex = Math.max(0, Number(saved.step) || 0);
+      notebookCompletedLessons = Math.max(0, Number(saved.completed) || 0);
+      notebookRevealedQuotient = String(saved.quotient || '');
+      notebookJournalLines = Array.isArray(saved.journal) ? saved.journal.slice(-20) : [];
+      notebookChatHistory = Array.isArray(saved.chat) ? saved.chat.slice(-12) : [];
+      startNotebookLesson(notebookLessonIndex, true);
+    } else {
+      startNotebookLesson(0, false);
+    }
+
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function closeNotebookModule() {
+    saveNotebookState();
+    notebookModule.hidden = true;
+    document.querySelector('.actions').hidden = false;
+    document.querySelector('.progress-wrap').hidden = false;
+    document.querySelector('.hero-card').hidden = false;
+    document.querySelector('.world-strip').hidden = false;
+    if (gameCompleted) {
+      finalCard.hidden = false;
+      gameArea.hidden = true;
+      checkBtn.hidden = true;
+      hintBtn.hidden = true;
+    } else {
+      gameArea.hidden = false;
+    }
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function appendNotebookChatMessage(role, text, pending = false) {
+    const wrap = document.createElement('div');
+    wrap.className = `tutor-message ${role === 'user' ? 'emi-message' : 'nova-message'}${pending ? ' pending' : ''}`;
+    const label = document.createElement('span');
+    label.textContent = role === 'user' ? 'EMILIANO' : 'NOVA';
+    const p = document.createElement('p');
+    p.textContent = text;
+    wrap.append(label, p);
+    notebookChatMessages.appendChild(wrap);
+    notebookChatMessages.scrollTop = notebookChatMessages.scrollHeight;
+    return wrap;
+  }
+
+  async function askNotebookNova(question) {
+    const lesson = currentNotebookLesson();
+    const step = currentNotebookStep();
+    const cleanQuestion = String(question || '').trim().slice(0,180);
+    if (!cleanQuestion) return;
+
+    appendNotebookChatMessage('user', cleanQuestion);
+    notebookChatHistory.push({role:'user', content:cleanQuestion});
+    const pending = appendNotebookChatMessage('assistant', 'Estoy mirando este paso contigo…', true);
+    notebookChatSend.disabled = true;
+    notebookChatInput.disabled = true;
+
+    try {
+      const res = await fetch('/api/tutor', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          mode:'notebook',
+          question:cleanQuestion,
+          history:notebookChatHistory.slice(-12),
+          notebook:{
+            dividend:lesson.dividend,
+            divisor:lesson.divisor,
+            lessonTitle:lesson.title,
+            focus:lesson.focus,
+            phase:step.phase,
+            stepTitle:step.title,
+            why:step.why,
+            forWhat:step.forWhat,
+            how:step.how,
+            prompt:step.prompt,
+            expected:step.expected ?? null
+          }
+        })
+      });
+      const data = await res.json().catch(()=>({}));
+      if (!res.ok) throw new Error(data.error || 'No fue posible conectar con NOVA.');
+      pending.remove();
+      const message = data.message || 'Miremos solo este paso. Dime qué parte no entiendes y la revisamos juntos.';
+      appendNotebookChatMessage('assistant', message);
+      notebookChatHistory.push({role:'assistant', content:message});
+      notebookChatHistory = notebookChatHistory.slice(-12);
+      saveNotebookState();
+    } catch {
+      pending.remove();
+      appendNotebookChatMessage('assistant', `En este paso recuerda tres cosas. Por qué: ${step.why} Para qué: ${step.forWhat} Cómo: ${step.how}`);
+    } finally {
+      notebookChatSend.disabled = false;
+      notebookChatInput.disabled = false;
+      notebookChatInput.focus({preventScroll:true});
+    }
+  }
 
   const worlds = [
     { name: 'Bosque de los Repartos', icon: '🌿', color: '#70f0a7', subtitle: 'Aprender a repartir' },
@@ -1350,6 +1874,7 @@
     localStorage.setItem('emilianoMission', '0');
     localStorage.setItem('emilianoUnlocked', '0');
     localStorage.removeItem(SAVE_KEY);
+    resetNotebookState();
 
     settingsModal.hidden = true;
     document.body.classList.remove('modal-open');
@@ -1424,13 +1949,63 @@
     if (e.target === guideModal) closeGuideBtn.click();
   });
 
+
+  notebookStartBtn?.addEventListener('click', openNotebookModule);
+  notebookSettingsBtn?.addEventListener('click', () => {
+    settingsModal.hidden = true;
+    document.body.classList.remove('modal-open');
+    openNotebookModule();
+  });
+  notebookBackBtn?.addEventListener('click', closeNotebookModule);
+
+  notebookNextBtn?.addEventListener('click', () => {
+    if (notebookLessonIndex >= notebookLessons.length - 1) {
+      notebookCompletedLessons = notebookLessons.length;
+      saveNotebookState();
+      notebookDoneTitle.textContent = '¡Módulo de cuaderno completado!';
+      notebookDoneFeedback.textContent = 'Ya recorriste el procedimiento completo: MIRO, DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. Ahora la meta es practicarlo cada vez con menos ayuda de NOVA.';
+      notebookNextBtn.textContent = 'Volver al Atlas';
+      notebookNextBtn.onclick = () => closeNotebookModule();
+      return;
+    }
+    notebookLessonIndex += 1;
+    notebookStepIndex = 0;
+    notebookRevealedQuotient = '';
+    notebookJournalLines = [];
+    notebookChatHistory = [];
+    startNotebookLesson(notebookLessonIndex, false);
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  showPlacementBtn?.addEventListener('click', () => {
+    playTap();
+    placementHelp.hidden = !placementHelp.hidden;
+  });
+
+  notebookHelpBtn?.addEventListener('click', () => {
+    playTap();
+    notebookChat.hidden = !notebookChat.hidden;
+    if (!notebookChat.hidden) {
+      notebookChatInput.focus({preventScroll:true});
+      notebookChat.scrollIntoView({behavior:'smooth', block:'nearest'});
+    }
+  });
+
+  notebookChatForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const question = notebookChatInput.value.trim();
+    if (!question) return;
+    notebookChatInput.value = '';
+    askNotebookNova(question);
+  });
+
   startBtn.addEventListener('click', () => openApp(true));
   skipIntroBtn.addEventListener('click', () => openApp(false));
 
   // Guarda incluso si se cierra el navegador, se bloquea la tablet o cambia de app.
-  window.addEventListener('pagehide', saveGameState);
+  window.addEventListener('pagehide', () => { saveGameState(); saveNotebookState(); });
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') saveGameState();
+    if (document.visibilityState === 'hidden') { saveGameState(); saveNotebookState(); }
   });
 
   const initialSaved = readSavedGame();

@@ -157,7 +157,125 @@
       <p class="eyebrow">ATLAS RESTAURADO</p>
       <h2>¡Emiliano, completaste la expedición!</h2>
       <p>Recuperaste los 36 códigos y atravesaste todos los hábitats. El Atlas Animal vuelve a estar conectado.</p>
-      <button id="replayBtn" class="primary-btn">Volver a explorar</button>
+      <div class="final-actions">
+        <button id="notebookStartBtn" class="primary-btn notebook-launch-btn">✏️ Aprender a dividir en mi cuaderno</button>
+        <button id="replayBtn" class="secondary-btn">Volver a explorar</button>
+      </div>
+    </section>
+
+
+    <section id="notebookModule" class="notebook-module" hidden>
+      <div class="notebook-top">
+        <button id="notebookBackBtn" class="notebook-back-btn" type="button">← Atlas</button>
+        <div>
+          <p class="eyebrow">AVENTURA 2</p>
+          <h2>Dividir en mi cuaderno</h2>
+        </div>
+        <div id="notebookLessonCounter" class="notebook-counter">1 / 12</div>
+      </div>
+
+      <section class="notebook-hero">
+        <div class="notebook-animal" id="notebookAnimal">🔬</div>
+        <div>
+          <span id="notebookMissionLabel" class="notebook-kicker">MISIÓN DE CUADERNO</span>
+          <h3 id="notebookTitle">La primera división escrita</h3>
+          <p id="notebookStory">NOVA te acompañará mientras haces la división a mano.</p>
+        </div>
+      </section>
+
+      <div class="notebook-progress-wrap">
+        <div class="progress-label">
+          <span>Progreso del módulo</span>
+          <strong id="notebookProgressText">0%</strong>
+        </div>
+        <div class="progress-track">
+          <div id="notebookProgressBar" class="progress-bar"></div>
+        </div>
+      </div>
+
+      <section class="procedure-strip" aria-label="Pasos de la división">
+        <div class="procedure-step" data-procedure="observe"><span>👀</span><strong>MIRO</strong></div>
+        <div class="procedure-step" data-procedure="divide"><span>➗</span><strong>DIVIDO</strong></div>
+        <div class="procedure-step" data-procedure="multiply"><span>✖️</span><strong>MULTIPLICO</strong></div>
+        <div class="procedure-step" data-procedure="subtract"><span>➖</span><strong>RESTO</strong></div>
+        <div class="procedure-step" data-procedure="bring"><span>⬇️</span><strong>BAJO</strong></div>
+        <div class="procedure-step" data-procedure="repeat"><span>🔁</span><strong>REPITO</strong></div>
+      </section>
+
+      <section class="paper-layout-card">
+        <div class="paper-layout-head">
+          <div>
+            <span>MODELO DE UBICACIÓN</span>
+            <strong>Hazlo tú en el cuaderno</strong>
+          </div>
+          <button id="showPlacementBtn" class="paper-help-btn" type="button">👀 ¿Dónde lo escribo?</button>
+        </div>
+
+        <div class="division-layout" aria-label="Modelo de división escrita">
+          <div id="notebookDividend" class="division-dividend">84</div>
+          <div class="division-bracket"></div>
+          <div id="notebookDivisor" class="division-divisor">4</div>
+          <div id="notebookQuotient" class="division-quotient" aria-label="Cociente">?</div>
+        </div>
+
+        <p id="placementHelp" class="placement-help" hidden></p>
+        <div id="notebookJournal" class="notebook-journal"></div>
+      </section>
+
+      <section class="nova-notebook-card" aria-live="polite">
+        <div class="nova-notebook-head">
+          <div class="nova-orb">N</div>
+          <div>
+            <p class="eyebrow">NOVA · A TU LADO</p>
+            <strong id="notebookStepTitle">Vamos a escribir la división</strong>
+          </div>
+          <span id="notebookStepCount" class="ai-status">PASO 1</span>
+        </div>
+
+        <div class="nova-three">
+          <article>
+            <span>¿POR QUÉ?</span>
+            <p id="notebookWhy"></p>
+          </article>
+          <article>
+            <span>¿PARA QUÉ?</span>
+            <p id="notebookForWhat"></p>
+          </article>
+          <article>
+            <span>¿CÓMO?</span>
+            <p id="notebookHow"></p>
+          </article>
+        </div>
+
+        <div class="notebook-prompt-box">
+          <strong id="notebookPrompt"></strong>
+          <div id="notebookAnswerArea"></div>
+        </div>
+
+        <button id="notebookHelpBtn" class="notebook-help-btn" type="button">💬 Preguntarle a NOVA</button>
+
+        <div id="notebookChat" class="notebook-chat" hidden>
+          <div id="notebookChatMessages" class="tutor-chat">
+            <div class="tutor-message nova-message">
+              <span>NOVA</span>
+              <p>Pregúntame, yo puedo ayudarte con este paso.</p>
+            </div>
+          </div>
+          <form id="notebookChatForm" class="tutor-input-row">
+            <label for="notebookChatInput" class="sr-only">Pregúntale a NOVA sobre la división del cuaderno</label>
+            <input id="notebookChatInput" maxlength="180" autocomplete="off" placeholder="Ej.: ¿Por qué escribo este número aquí?" />
+            <button id="notebookChatSend" type="submit">Enviar</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="notebookLessonDone" class="notebook-done-card" hidden>
+        <div class="notebook-done-icon">✏️</div>
+        <p class="eyebrow">DIVISIÓN COMPLETADA EN EL CUADERNO</p>
+        <h3 id="notebookDoneTitle">Terminaste 84 ÷ 4</h3>
+        <p id="notebookDoneFeedback"></p>
+        <button id="notebookNextBtn" class="primary-btn" type="button">Siguiente división →</button>
+      </section>
     </section>
 
   </main>
@@ -212,6 +330,16 @@
             <span>Activa o desactiva los sonidos de la expedición.</span>
           </div>
           <button id="soundBtn" class="settings-toggle" type="button" aria-label="Activar o desactivar sonido" aria-pressed="true">🔊 Activado</button>
+        </div>
+
+        <div class="settings-divider"></div>
+
+        <div class="settings-row">
+          <div class="settings-copy">
+            <strong>Módulo de cuaderno</strong>
+            <span>Vuelve a la última división escrita o reinicia solo este módulo.</span>
+          </div>
+          <button id="notebookSettingsBtn" class="settings-toggle" type="button">✏️ Abrir</button>
         </div>
 
         <div class="settings-divider"></div>
