@@ -79,3 +79,14 @@ Cambios:
 - Se agregó un paso explícito **REPITO** antes de volver a **DIVIDO**.
 - El historial del cuaderno muestra cada vuelta del ciclo.
 - El modo de pruebas con clave `123456` se conserva.
+
+## Versión 6.3 — NOVA enseña cómo obtener cada número
+
+El módulo de cuaderno ahora diferencia:
+- **¿QUÉ HAGO?**
+- **¿CÓMO LO HAGO?**
+- **¿QUÉ DESCUBRO?**
+
+En el paso DIVIDO se muestran los múltiplos del divisor para que Emiliano pueda descubrir cuántas veces cabe sin adivinar. Por ejemplo, `9 ÷ 3` muestra `3, 6, 9` y permite contar 3 saltos.
+
+También se corrigió una fuga de respuesta: la cifra del cociente ya no aparece en el modelo hasta que Emiliano la responde correctamente.

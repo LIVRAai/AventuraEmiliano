@@ -98,6 +98,7 @@
   const notebookWhy = $('#notebookWhy');
   const notebookForWhat = $('#notebookForWhat');
   const notebookHow = $('#notebookHow');
+  const notebookDiscovery = $('#notebookDiscovery');
   const notebookPrompt = $('#notebookPrompt');
   const notebookAnswerArea = $('#notebookAnswerArea');
   const showPlacementBtn = $('#showPlacementBtn');
@@ -112,6 +113,34 @@
   const notebookDoneTitle = $('#notebookDoneTitle');
   const notebookDoneFeedback = $('#notebookDoneFeedback');
   const notebookNextBtn = $('#notebookNextBtn');
+
+  const academyHome = $('#academyHome');
+  const academyHomeBtn = $('#academyHomeBtn');
+  const academyRouteGrid = $('#academyRouteGrid');
+  const academySkillGrid = $('#academySkillGrid');
+  const academyMasteryText = $('#academyMasteryText');
+  const academyMasteryBar = $('#academyMasteryBar');
+  const academyRecommendation = $('#academyRecommendation');
+  const academyPracticeView = $('#academyPracticeView');
+  const academyPracticeIcon = $('#academyPracticeIcon');
+  const academyPracticeKicker = $('#academyPracticeKicker');
+  const academyPracticeTitle = $('#academyPracticeTitle');
+  const academyPracticeGoal = $('#academyPracticeGoal');
+  const academyPracticeCounter = $('#academyPracticeCounter');
+  const academyPracticeBar = $('#academyPracticeBar');
+  const academyNovaExplain = $('#academyNovaExplain');
+  const academyChallenge = $('#academyChallenge');
+  const academyFeedback = $('#academyFeedback');
+  const academyFeedbackLabel = $('#academyFeedbackLabel');
+  const academyFeedbackTitle = $('#academyFeedbackTitle');
+  const academyFeedbackText = $('#academyFeedbackText');
+  const academyContinueBtn = $('#academyContinueBtn');
+  const academyAskNovaBtn = $('#academyAskNovaBtn');
+  const academyChat = $('#academyChat');
+  const academyChatMessages = $('#academyChatMessages');
+  const academyChatForm = $('#academyChatForm');
+  const academyChatInput = $('#academyChatInput');
+  const notebookLessonView = $('#notebookLessonView');
 
 
   const NOTEBOOK_SAVE_KEY = 'emilianoNotebookV1';
@@ -142,6 +171,557 @@
   let notebookRevealedQuotient = '';
   let notebookJournalLines = [];
   let notebookChatHistory = [];
+
+  const ACADEMY_SAVE_KEY = 'emilianoAcademyV1';
+
+  const academyRoutes = [
+    { id:'terms', icon:'🧩', title:'Conozco mi división', goal:'Reconocer dividendo, divisor, cociente y residuo.', skills:['terms'] },
+    { id:'fits', icon:'🎯', title:'¿Cuántas veces cabe?', goal:'Encontrar el múltiplo correcto sin pasarse.', skills:['fits','multiply'] },
+    { id:'long', icon:'✏️', title:'Divido en mi cuaderno', goal:'Hacer la división a mano siguiendo el ciclo completo.', skills:['fits','multiply','subtract','bring','placement'] },
+    { id:'exact', icon:'⚖️', title:'Exacta o inexacta', goal:'Usar el residuo para clasificar una división.', skills:['exact'] },
+    { id:'divisors', icon:'🔎', title:'Divisores de un número', goal:'Descubrir qué números dividen exactamente.', skills:['divisors'] },
+    { id:'prime', icon:'💎', title:'Primo o compuesto', goal:'Reconocer si un número tiene dos divisores o más.', skills:['prime'] },
+    { id:'factors', icon:'🧱', title:'Factores primos', goal:'Descomponer números usando solo factores primos.', skills:['factors'] },
+    { id:'problems', icon:'🧠', title:'¿Qué operación necesito?', goal:'Reconocer cuándo un problema necesita división.', skills:['problems'] }
+  ];
+
+  const academyChallengeSets = {
+    terms: [
+      { dividend:125, divisor:5, quotient:25, remainder:0, ask:'¿Cuál es el DIVIDENDO?', answer:'125', choices:['5','25','125','0'],
+        explain:'El dividendo es la cantidad que vamos a dividir. En 125 ÷ 5, la cantidad que empieza la operación es 125.' },
+      { dividend:125, divisor:5, quotient:25, remainder:0, ask:'¿Cuál es el DIVISOR?', answer:'5', choices:['125','5','25','0'],
+        explain:'El divisor indica entre cuánto dividimos. Aquí estamos dividiendo entre 5.' },
+      { dividend:125, divisor:5, quotient:25, remainder:0, ask:'¿Cuál es el COCIENTE?', answer:'25', choices:['0','5','25','125'],
+        explain:'El cociente es el resultado que construimos arriba o al lado de la división. Aquí es 25.' },
+      { dividend:79, divisor:2, quotient:39, remainder:1, ask:'¿Cuál es el RESIDUO?', answer:'1', choices:['2','39','1','79'],
+        explain:'El residuo es lo que queda cuando ya no podemos formar otro grupo completo. Aquí queda 1.' },
+      { dividend:84, divisor:5, quotient:16, remainder:4, ask:'¿Qué número nos dice ENTRE CUÁNTO estamos dividiendo?', answer:'5', choices:['84','16','5','4'],
+        explain:'Ese papel lo cumple el divisor. En 84 ÷ 5, el divisor es 5.' },
+      { dividend:63, divisor:3, quotient:21, remainder:0, ask:'¿Qué número muestra CUÁNTO SOBRÓ?', answer:'0', choices:['21','3','63','0'],
+        explain:'Lo que sobra se llama residuo. Como quedó 0, esta división es exacta.' }
+    ],
+    fits: [
+      { current:9, divisor:3, answer:3 },
+      { current:17, divisor:5, answer:3 },
+      { current:30, divisor:7, answer:4 },
+      { current:41, divisor:6, answer:6 },
+      { current:32, divisor:5, answer:6 },
+      { current:68, divisor:9, answer:7 },
+      { current:22, divisor:4, answer:5 },
+      { current:72, divisor:8, answer:9 }
+    ],
+    exact: [
+      { dividend:63, divisor:3, q:21, r:0, answer:'Exacta' },
+      { dividend:79, divisor:2, q:39, r:1, answer:'Inexacta' },
+      { dividend:84, divisor:5, q:16, r:4, answer:'Inexacta' },
+      { dividend:32, divisor:8, q:4, r:0, answer:'Exacta' },
+      { dividend:93, divisor:3, q:31, r:0, answer:'Exacta' },
+      { dividend:68, divisor:4, q:17, r:0, answer:'Exacta' }
+    ],
+    divisors: [
+      { n:12, answers:[1,2,3,4,6,12], choices:[1,2,3,4,5,6,8,12] },
+      { n:15, answers:[1,3,5,15], choices:[1,2,3,4,5,6,10,15] },
+      { n:20, answers:[1,2,4,5,10,20], choices:[1,2,3,4,5,8,10,20] },
+      { n:24, answers:[1,2,3,4,6,8,12,24], choices:[1,2,3,4,5,6,8,12,24] },
+      { n:39, answers:[1,3,13,39], choices:[1,2,3,6,9,13,19,39] }
+    ],
+    prime: [
+      { n:19, answer:'Primo', divisors:[1,19] },
+      { n:16, answer:'Compuesto', divisors:[1,2,4,8,16] },
+      { n:37, answer:'Primo', divisors:[1,37] },
+      { n:51, answer:'Compuesto', divisors:[1,3,17,51] },
+      { n:79, answer:'Primo', divisors:[1,79] },
+      { n:26, answer:'Compuesto', divisors:[1,2,13,26] }
+    ],
+    factors: [
+      { n:20, answer:'2 × 2 × 5', choices:['2 × 2 × 5','4 × 5','2 × 10','1 × 20'] },
+      { n:12, answer:'2 × 2 × 3', choices:['2 × 2 × 3','3 × 4','2 × 6','1 × 12'] },
+      { n:18, answer:'2 × 3 × 3', choices:['2 × 3 × 3','3 × 6','2 × 9','1 × 18'] },
+      { n:24, answer:'2 × 2 × 2 × 3', choices:['2 × 2 × 2 × 3','4 × 6','3 × 8','2 × 12'] },
+      { n:30, answer:'2 × 3 × 5', choices:['2 × 3 × 5','3 × 10','5 × 6','2 × 15'] }
+    ],
+    problems: [
+      { text:'Un libro tiene 135 páginas. Si leo 5 páginas cada día, ¿cuántos días necesito?', answer:'División', op:'135 ÷ 5 = 27',
+        explain:'Conocemos el total, 135, y el tamaño de cada grupo, 5 páginas por día. Buscamos cuántos grupos de 5 caben en 135.' },
+      { text:'Hay 321 cajas y cada caja tiene 4 bolsos. ¿Cuántos bolsos hay en total?', answer:'Multiplicación', op:'321 × 4 = 1284',
+        explain:'Tenemos 321 grupos de 4 y queremos juntar todos los objetos. Por eso multiplicamos.' },
+      { text:'Hay 68 globos para repartir por igual entre 2 niños. ¿Cuántos recibe cada niño?', answer:'División', op:'68 ÷ 2 = 34',
+        explain:'Tenemos un total y queremos repartirlo entre 2 grupos iguales. Eso es división.' },
+      { text:'27 dulces se reparten entre 3 niños. ¿Cuántos recibe cada uno?', answer:'División', op:'27 ÷ 3 = 9',
+        explain:'Buscamos cuánto le corresponde a cada uno de 3 grupos iguales.' },
+      { text:'7 cajas tienen 6 lápices cada una. ¿Cuántos lápices hay?', answer:'Multiplicación', op:'7 × 6 = 42',
+        explain:'Conocemos cuántos grupos hay y cuánto contiene cada grupo. Queremos el total, así que multiplicamos.' },
+      { text:'48 estudiantes forman equipos de 6. ¿Cuántos equipos se forman?', answer:'División', op:'48 ÷ 6 = 8',
+        explain:'Conocemos el total y el tamaño de cada equipo. Buscamos cuántos grupos caben.' }
+    ]
+  };
+
+  let academyState = {
+    routeProgress:{},
+    stats:{},
+    lastRoute:null
+  };
+  let academyCurrentRoute = null;
+  let academyChallengeIndex = 0;
+  let academySelected = new Set();
+  let academyChatHistory = [];
+
+
+
+  function readAcademyState() {
+    try {
+      const raw = localStorage.getItem(ACADEMY_SAVE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data && typeof data === 'object') {
+        academyState.routeProgress = data.routeProgress || {};
+        academyState.stats = data.stats || {};
+        academyState.lastRoute = data.lastRoute || null;
+      }
+    } catch {}
+  }
+
+  function saveAcademyState() {
+    if (testerMode) return;
+    try {
+      localStorage.setItem(ACADEMY_SAVE_KEY, JSON.stringify({
+        routeProgress:academyState.routeProgress,
+        stats:academyState.stats,
+        lastRoute:academyState.lastRoute,
+        savedAt:Date.now()
+      }));
+    } catch {}
+  }
+
+  function recordAcademySkill(skill, correct) {
+    if (!skill) return;
+    const s = academyState.stats[skill] || {attempts:0, correct:0};
+    s.attempts += 1;
+    if (correct) s.correct += 1;
+    academyState.stats[skill] = s;
+    saveAcademyState();
+  }
+
+  function skillAccuracy(skill) {
+    const s = academyState.stats[skill];
+    if (!s || !s.attempts) return null;
+    return Math.round((s.correct / s.attempts) * 100);
+  }
+
+  function skillStatus(skill) {
+    const acc = skillAccuracy(skill);
+    if (acc === null) return {label:'Sin practicar', cls:'new'};
+    if (acc >= 85) return {label:`Fuerte · ${acc}%`, cls:'strong'};
+    if (acc >= 65) return {label:`En progreso · ${acc}%`, cls:'progress'};
+    return {label:`Reforzar · ${acc}%`, cls:'reinforce'};
+  }
+
+  function routeStatus(route) {
+    const values = route.skills.map(skillAccuracy).filter(v => v !== null);
+    if (!values.length) return {label:'Empezar', cls:'new'};
+    const avg = Math.round(values.reduce((a,b)=>a+b,0) / values.length);
+    if (avg >= 85) return {label:`Fuerte · ${avg}%`, cls:'strong'};
+    if (avg >= 65) return {label:`En progreso · ${avg}%`, cls:'progress'};
+    return {label:`Reforzar · ${avg}%`, cls:'reinforce'};
+  }
+
+  function overallAcademyMastery() {
+    const values = Object.keys(academyState.stats)
+      .map(skillAccuracy)
+      .filter(v => v !== null);
+    return values.length ? Math.round(values.reduce((a,b)=>a+b,0)/values.length) : 0;
+  }
+
+  function bestAcademyRecommendation() {
+    const priority = ['fits','terms','placement','multiply','subtract','bring','exact','problems','divisors','prime','factors'];
+    const practiced = priority
+      .map(skill => ({skill, acc:skillAccuracy(skill)}))
+      .filter(x => x.acc !== null)
+      .sort((a,b) => a.acc - b.acc);
+
+    if (practiced.length && practiced[0].acc < 80) {
+      const names = {
+        fits:'¿Cuántas veces cabe?',
+        terms:'Conozco mi división',
+        placement:'Divido en mi cuaderno',
+        multiply:'¿Cuántas veces cabe?',
+        subtract:'Divido en mi cuaderno',
+        bring:'Divido en mi cuaderno',
+        exact:'Exacta o inexacta',
+        problems:'¿Qué operación necesito?',
+        divisors:'Divisores de un número',
+        prime:'Primo o compuesto',
+        factors:'Factores primos'
+      };
+      return `NOVA recomienda reforzar: ${names[practiced[0].skill]}.`;
+    }
+    if (!practiced.length) return 'Empieza por “¿Cuántas veces cabe?” y después practica la división en el cuaderno.';
+    return 'Vas construyendo una base sólida. Alterna la práctica del cuaderno con los retos de comprensión.';
+  }
+
+  function renderAcademyHome() {
+    academyHome.hidden = false;
+    academyPracticeView.hidden = true;
+    notebookLessonView.hidden = true;
+    academyHomeBtn.hidden = true;
+
+    const mastery = overallAcademyMastery();
+    academyMasteryBar.style.width = `${mastery}%`;
+    academyMasteryText.textContent = mastery ? `${mastery}% de dominio observado` : 'Empezando';
+    academyRecommendation.textContent = bestAcademyRecommendation();
+
+    academyRouteGrid.innerHTML = '';
+    academyRoutes.forEach(route => {
+      const status = routeStatus(route);
+      const progress = academyState.routeProgress[route.id] || 0;
+      const btn = document.createElement('button');
+      btn.className = `academy-route-card ${status.cls}`;
+      btn.type = 'button';
+      btn.innerHTML = `
+        <div class="academy-route-icon">${route.icon}</div>
+        <div class="academy-route-copy">
+          <span>${status.label}</span>
+          <strong>${route.title}</strong>
+          <p>${route.goal}</p>
+          ${route.id === 'long'
+            ? `<small>${Math.min(notebookCompletedLessons, notebookLessons.length)} / ${notebookLessons.length} divisiones</small>`
+            : `<small>Reto ${Math.min(progress + 1, (academyChallengeSets[route.id] || []).length)} de ${(academyChallengeSets[route.id] || []).length}</small>`
+          }
+        </div>
+        <b>→</b>
+      `;
+      btn.addEventListener('click', () => startAcademyRoute(route.id));
+      academyRouteGrid.appendChild(btn);
+    });
+
+    const skillNames = {
+      terms:['🧩','Términos','Dividendo, divisor, cociente y residuo'],
+      fits:['🎯','Cuántas veces cabe','Elegir el múltiplo correcto sin pasarse'],
+      multiply:['✖️','Multiplicación','Comprobar cuánto se usó'],
+      subtract:['➖','Resta','Encontrar cuánto quedó'],
+      bring:['⬇️','Bajar cifra','Formar el nuevo número de trabajo'],
+      placement:['📐','Ubicación','Escribir cada número en el lugar correcto'],
+      exact:['⚖️','Exacta / inexacta','Interpretar el residuo'],
+      divisors:['🔎','Divisores','Encontrar divisiones exactas'],
+      prime:['💎','Primos','Distinguir primo y compuesto'],
+      factors:['🧱','Factores primos','Descomponer un número'],
+      problems:['🧠','Problemas','Elegir la operación adecuada']
+    };
+
+    academySkillGrid.innerHTML = '';
+    Object.entries(skillNames).forEach(([key, meta]) => {
+      const st = skillStatus(key);
+      const div = document.createElement('article');
+      div.className = `academy-skill ${st.cls}`;
+      div.innerHTML = `
+        <span class="academy-skill-icon">${meta[0]}</span>
+        <div><strong>${meta[1]}</strong><small>${meta[2]}</small></div>
+        <b>${st.label}</b>
+      `;
+      academySkillGrid.appendChild(div);
+    });
+
+    saveAcademyState();
+  }
+
+  function showAcademyFeedback(correct, title, text, label = 'MIRA LA LÓGICA') {
+    academyFeedback.hidden = false;
+    academyFeedback.classList.toggle('correct', !!correct);
+    academyFeedback.classList.toggle('review', !correct);
+    academyFeedbackLabel.textContent = label;
+    academyFeedbackTitle.textContent = title;
+    academyFeedbackText.textContent = text;
+    academyChallenge.querySelectorAll('button,input').forEach(el => el.disabled = true);
+    academyFeedback.scrollIntoView({behavior:'smooth', block:'nearest'});
+  }
+
+  function academyMultiplesMarkup(current, divisor, answer) {
+    let items = '';
+    for (let i=1; i<=Math.min(answer+1,9); i++) {
+      const val = divisor*i;
+      const cls = i === answer ? 'best' : (val > current ? 'too-big' : '');
+      items += `<div class="academy-multiple ${cls}"><span>${divisor} × ${i}</span><strong>${val}</strong>${val > current ? '<small>se pasa</small>' : ''}</div>`;
+    }
+    return `<div class="academy-multiple-row">${items}</div>`;
+  }
+
+  function renderAcademyChallenge() {
+    if (!academyCurrentRoute || academyCurrentRoute === 'long') return;
+    const set = academyChallengeSets[academyCurrentRoute] || [];
+    if (!set.length) return;
+
+    academyChallengeIndex = Math.max(0, Math.min(set.length-1, academyChallengeIndex));
+    const c = set[academyChallengeIndex];
+    const route = academyRoutes.find(r => r.id === academyCurrentRoute);
+
+    academyPracticeIcon.textContent = route.icon;
+    academyPracticeKicker.textContent = `RUTA · ${route.title.toUpperCase()}`;
+    academyPracticeTitle.textContent = route.title;
+    academyPracticeGoal.textContent = route.goal;
+    academyPracticeCounter.textContent = `${academyChallengeIndex + 1} / ${set.length}`;
+    academyPracticeBar.style.width = `${Math.round((academyChallengeIndex / set.length)*100)}%`;
+    academyFeedback.hidden = true;
+    academySelected = new Set();
+    academyChat.hidden = true;
+    academyChatHistory = [];
+    academyChatMessages.innerHTML = `<div class="tutor-message nova-message"><span>NOVA</span><p>Pregúntame, yo puedo ayudarte a entender este reto.</p></div>`;
+
+    if (academyCurrentRoute === 'terms') {
+      academyNovaExplain.textContent = 'Antes de calcular, quiero que sepas qué papel cumple cada número dentro de una división.';
+      academyChallenge.innerHTML = `
+        <div class="academy-division-diagram">
+          <div><span>DIVIDENDO</span><strong>${c.dividend}</strong></div>
+          <div><span>DIVISOR</span><strong>${c.divisor}</strong></div>
+          <div><span>COCIENTE</span><strong>${c.quotient}</strong></div>
+          <div><span>RESIDUO</span><strong>${c.remainder}</strong></div>
+        </div>
+        <h4>${c.ask}</h4>
+        <div class="academy-choice-grid">
+          ${c.choices.map(x => `<button type="button" class="academy-choice" data-value="${x}">${x}</button>`).join('')}
+        </div>`;
+      academyChallenge.querySelectorAll('.academy-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ok = btn.dataset.value === c.answer;
+          recordAcademySkill('terms', ok);
+          if (ok) {
+            playSuccess();
+            showAcademyFeedback(true, 'Sí. Ese es el número.', c.explain);
+          } else {
+            playOops();
+            showAcademyFeedback(false, 'Miremos el papel de cada número.', c.explain);
+          }
+        });
+      });
+    }
+
+    if (academyCurrentRoute === 'fits') {
+      academyNovaExplain.textContent = `No tienes que adivinar. Busca los múltiplos de ${c.divisor} y detente antes de pasar de ${c.current}.`;
+      academyChallenge.innerHTML = `
+        <div class="academy-big-question">¿Cuántas veces cabe <b>${c.divisor}</b> en <b>${c.current}</b> sin pasarse?</div>
+        ${academyMultiplesMarkup(c.current,c.divisor,c.answer)}
+        <div class="academy-number-answer">
+          <input inputmode="numeric" pattern="[0-9]*" maxlength="2" placeholder="¿Cuántas veces?" />
+          <button type="button">Comprobar</button>
+        </div>`;
+      const input = academyChallenge.querySelector('input');
+      academyChallenge.querySelector('button').addEventListener('click', () => {
+        const value = Number(input.value);
+        const ok = value === c.answer;
+        recordAcademySkill('fits', ok);
+        if (ok) {
+          recordAcademySkill('multiply', true);
+          playSuccess();
+          showAcademyFeedback(true, `${c.divisor} cabe ${c.answer} veces.`, `${c.divisor} × ${c.answer} = ${c.divisor*c.answer}. El siguiente múltiplo sería ${c.divisor*(c.answer+1)}, que ${c.divisor*(c.answer+1)>c.current?'se pasa':'todavía cabe'}. Por eso usamos ${c.answer}.`);
+        } else {
+          playOops();
+          showAcademyFeedback(false, 'No lo adivines: compruébalo con la multiplicación.', `Busca el múltiplo más cercano a ${c.current} sin superarlo. ${c.divisor} × ${c.answer} = ${c.divisor*c.answer} y ${c.divisor} × ${c.answer+1} = ${c.divisor*(c.answer+1)}.`);
+        }
+      });
+    }
+
+    if (academyCurrentRoute === 'exact') {
+      academyNovaExplain.textContent = 'Para decidir si una división es exacta o inexacta, mira solamente qué quedó al final: el residuo.';
+      academyChallenge.innerHTML = `
+        <div class="academy-result-card">
+          <span>${c.dividend} ÷ ${c.divisor}</span>
+          <strong>Cociente: ${c.q}</strong>
+          <b>Residuo: ${c.r}</b>
+        </div>
+        <h4>¿Esta división es exacta o inexacta?</h4>
+        <div class="academy-choice-grid two">
+          <button type="button" class="academy-choice" data-value="Exacta">Exacta</button>
+          <button type="button" class="academy-choice" data-value="Inexacta">Inexacta</button>
+        </div>`;
+      academyChallenge.querySelectorAll('.academy-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ok = btn.dataset.value === c.answer;
+          recordAcademySkill('exact', ok);
+          const logic = c.r === 0
+            ? 'El residuo es 0. No sobró nada, por eso la división es exacta.'
+            : `El residuo es ${c.r}, distinto de 0. Sobró una cantidad, por eso la división es inexacta.`;
+          if (ok) { playSuccess(); showAcademyFeedback(true, c.answer, logic); }
+          else { playOops(); showAcademyFeedback(false, 'Mira el residuo.', logic); }
+        });
+      });
+    }
+
+    if (academyCurrentRoute === 'divisors') {
+      academyNovaExplain.textContent = `Un divisor de ${c.n} es un número que lo divide exactamente, sin dejar residuo. Puedes comprobar cada opción multiplicando.`;
+      academyChallenge.innerHTML = `
+        <div class="academy-big-question">Selecciona TODOS los divisores de <b>${c.n}</b></div>
+        <div class="academy-choice-grid multi">
+          ${c.choices.map(x => `<button type="button" class="academy-choice academy-toggle" data-value="${x}">${x}</button>`).join('')}
+        </div>
+        <button type="button" class="primary-btn academy-check-multi">Comprobar selección</button>`;
+      academyChallenge.querySelectorAll('.academy-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = Number(btn.dataset.value);
+          if (academySelected.has(v)) academySelected.delete(v); else academySelected.add(v);
+          btn.classList.toggle('selected', academySelected.has(v));
+        });
+      });
+      academyChallenge.querySelector('.academy-check-multi').addEventListener('click', () => {
+        const chosen = [...academySelected].sort((a,b)=>a-b);
+        const target = [...c.answers].sort((a,b)=>a-b);
+        const ok = JSON.stringify(chosen) === JSON.stringify(target);
+        recordAcademySkill('divisors', ok);
+        const pairs = [];
+        for (let i=0;i<c.answers.length;i++) {
+          const a=c.answers[i], b=c.n/a;
+          if (a<=b && Number.isInteger(b)) pairs.push(`${a} × ${b}`);
+        }
+        const text = `Los divisores son ${target.join(', ')}. Puedes encontrarlos con parejas que forman ${c.n}: ${pairs.join('; ')}.`;
+        if (ok) { playSuccess(); showAcademyFeedback(true, 'Encontraste todos los divisores.', text); }
+        else { playOops(); showAcademyFeedback(false, 'Revisa qué divisiones dejan residuo 0.', text); }
+      });
+    }
+
+    if (academyCurrentRoute === 'prime') {
+      academyNovaExplain.textContent = 'Un número primo tiene exactamente dos divisores: 1 y él mismo. Un compuesto tiene más.';
+      academyChallenge.innerHTML = `
+        <div class="academy-prime-number">${c.n}</div>
+        <h4>¿Es primo o compuesto?</h4>
+        <div class="academy-choice-grid two">
+          <button type="button" class="academy-choice" data-value="Primo">Primo</button>
+          <button type="button" class="academy-choice" data-value="Compuesto">Compuesto</button>
+        </div>`;
+      academyChallenge.querySelectorAll('.academy-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ok = btn.dataset.value === c.answer;
+          recordAcademySkill('prime', ok);
+          const text = `${c.n} tiene estos divisores: ${c.divisors.join(', ')}. ${c.answer === 'Primo' ? 'Son exactamente dos.' : 'Tiene más de dos.'} Por eso es ${c.answer.toLowerCase()}.`;
+          if (ok) { playSuccess(); showAcademyFeedback(true, `${c.n} es ${c.answer.toLowerCase()}.`, text); }
+          else { playOops(); showAcademyFeedback(false, 'Cuenta cuántos divisores tiene.', text); }
+        });
+      });
+    }
+
+    if (academyCurrentRoute === 'factors') {
+      academyNovaExplain.textContent = `Descomponer ${c.n} significa escribirlo como una multiplicación formada solamente por números primos.`;
+      academyChallenge.innerHTML = `
+        <div class="academy-prime-number">${c.n}</div>
+        <h4>¿Cuál es su descomposición en factores primos?</h4>
+        <div class="academy-choice-grid">
+          ${c.choices.map(x => `<button type="button" class="academy-choice factor-choice" data-value="${x}">${x}</button>`).join('')}
+        </div>`;
+      academyChallenge.querySelectorAll('.academy-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ok = btn.dataset.value === c.answer;
+          recordAcademySkill('factors', ok);
+          const text = `${c.answer} = ${c.n}. Todos los factores de esa expresión son números primos, por eso es la descomposición que buscamos.`;
+          if (ok) { playSuccess(); showAcademyFeedback(true, 'Esa descomposición usa solo primos.', text); }
+          else { playOops(); showAcademyFeedback(false, 'No basta con que la multiplicación dé el número.', `La descomposición debe usar únicamente factores primos. ${text}`); }
+        });
+      });
+    }
+
+    if (academyCurrentRoute === 'problems') {
+      academyNovaExplain.textContent = 'Antes de calcular, identifica qué estás buscando: total, cuánto toca a cada grupo o cuántos grupos caben.';
+      academyChallenge.innerHTML = `
+        <div class="academy-story-card">${c.text}</div>
+        <h4>¿Qué operación necesitas?</h4>
+        <div class="academy-choice-grid two">
+          <button type="button" class="academy-choice" data-value="División">➗ División</button>
+          <button type="button" class="academy-choice" data-value="Multiplicación">✖️ Multiplicación</button>
+        </div>`;
+      academyChallenge.querySelectorAll('.academy-choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const ok = btn.dataset.value === c.answer;
+          recordAcademySkill('problems', ok);
+          const text = `${c.explain} La operación es ${c.op}.`;
+          if (ok) { playSuccess(); showAcademyFeedback(true, `Necesitas ${c.answer.toLowerCase()}.`, text); }
+          else { playOops(); showAcademyFeedback(false, 'Primero decide qué estás buscando.', text); }
+        });
+      });
+    }
+
+    saveAcademyState();
+  }
+
+  function startAcademyRoute(routeId) {
+    academyCurrentRoute = routeId;
+    academyState.lastRoute = routeId;
+    academyHome.hidden = true;
+    academyHomeBtn.hidden = false;
+
+    if (routeId === 'long') {
+      academyPracticeView.hidden = true;
+      notebookLessonView.hidden = false;
+      const saved = readNotebookState();
+      if (saved) {
+        notebookLessonIndex = Math.max(0, Math.min(notebookLessons.length - 1, Number(saved.lesson) || 0));
+        notebookStepIndex = Math.max(0, Number(saved.step) || 0);
+        notebookCompletedLessons = Math.max(0, Number(saved.completed) || 0);
+        notebookRevealedQuotient = String(saved.quotient || '');
+        notebookJournalLines = Array.isArray(saved.journal) ? saved.journal.slice(-20) : [];
+        notebookChatHistory = Array.isArray(saved.chat) ? saved.chat.slice(-12) : [];
+        startNotebookLesson(notebookLessonIndex, true);
+      } else {
+        startNotebookLesson(0, false);
+      }
+    } else {
+      notebookLessonView.hidden = true;
+      academyPracticeView.hidden = false;
+      const set = academyChallengeSets[routeId] || [];
+      academyChallengeIndex = Math.max(0, Math.min(set.length-1, Number(academyState.routeProgress[routeId]) || 0));
+      renderAcademyChallenge();
+    }
+    saveAcademyState();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function appendAcademyChatMessage(role, text, pending=false) {
+    const wrap = document.createElement('div');
+    wrap.className = `tutor-message ${role === 'user' ? 'emi-message' : 'nova-message'}${pending ? ' pending' : ''}`;
+    const who = document.createElement('span');
+    who.textContent = role === 'user' ? 'EMILIANO' : 'NOVA';
+    const p = document.createElement('p');
+    p.textContent = text;
+    wrap.append(who,p);
+    academyChatMessages.appendChild(wrap);
+    academyChatMessages.scrollTop = academyChatMessages.scrollHeight;
+    return wrap;
+  }
+
+  async function askAcademyNova(question) {
+    const q = String(question || '').trim().slice(0,180);
+    if (!q || !academyCurrentRoute) return;
+    const route = academyRoutes.find(r => r.id === academyCurrentRoute);
+    const set = academyChallengeSets[academyCurrentRoute] || [];
+    const challenge = set[academyChallengeIndex] || {};
+    const previous = academyChatHistory.slice(-10);
+
+    appendAcademyChatMessage('user', q);
+    academyChatHistory.push({role:'user',content:q});
+    const pending = appendAcademyChatMessage('assistant','Estoy mirando este reto…',true);
+
+    try {
+      const res = await fetch('/api/tutor',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          mode:'academy',
+          question:q,
+          history:previous,
+          academy:{
+            route:route.title,
+            goal:route.goal,
+            challenge:JSON.stringify(challenge)
+          }
+        })
+      });
+      const data = await res.json().catch(()=>({}));
+      pending.remove();
+      if (!res.ok) throw new Error(data.error || 'No pude conectar con NOVA.');
+      const message = data.message || 'Miremos juntos qué información te da el reto y qué necesitas descubrir.';
+      appendAcademyChatMessage('assistant',message);
+      academyChatHistory.push({role:'assistant',content:message});
+      academyChatHistory = academyChatHistory.slice(-12);
+    } catch {
+      pending.remove();
+      appendAcademyChatMessage('assistant','No pude conectarme ahora. Usa la explicación del reto y vuelve a intentarlo.');
+    }
+  }
 
   function readNotebookState() {
     try {
@@ -178,6 +758,133 @@
     notebookJournalLines = [];
     notebookChatHistory = [];
     localStorage.removeItem(NOTEBOOK_SAVE_KEY);
+  }
+
+  function buildDivisionDiscovery(current, divisor) {
+    const quotientDigit = Math.floor(current / divisor);
+
+    if (current < divisor) {
+      return {
+        method:'zero',
+        values:[],
+        next:divisor,
+        text:`${divisor} es mayor que ${current}. No alcanza para formar ni un grupo completo, así que en esta posición corresponde 0.`
+      };
+    }
+
+    const values = [];
+    const maxVisible = Math.min(quotientDigit, 9);
+
+    for (let i = 1; i <= maxVisible; i++) {
+      values.push({
+        count:i,
+        value:divisor * i,
+        reaches:divisor * i === current
+      });
+    }
+
+    const nextValue = divisor * (quotientDigit + 1);
+
+    return {
+      method:'multiples',
+      values,
+      next:nextValue,
+      exact:quotientDigit * divisor === current,
+      text:`Cuenta de ${divisor} en ${divisor} sin pasar de ${current}. Cada salto representa una vez que ${divisor} cabe.`
+    };
+  }
+
+  function discoveryMarkup(step) {
+    if (!step) return '';
+
+    if (step.kind === 'divide' && step.discovery) {
+      if (step.discovery.method === 'zero') {
+        return `
+          <div class="discovery-label">CÓMO LO DESCUBRO</div>
+          <div class="zero-discovery">
+            <strong>${step.current} &lt; ${step.divisor}</strong>
+            <span>No cabe ni una vez completa.</span>
+            <b>Entonces escribo 0 en el cociente.</b>
+          </div>
+        `;
+      }
+
+      const chips = step.discovery.values.map((item) => `
+        <div class="multiple-chip${item.reaches ? ' exact' : ''}">
+          <span>${step.divisor} × ${item.count}</span>
+          <strong>${item.value}</strong>
+        </div>
+      `).join('');
+
+      const nextIsTooBig = step.discovery.next > step.current;
+      return `
+        <div class="discovery-label">CÓMO LO DESCUBRO</div>
+        <p class="discovery-explain">${step.discovery.text}</p>
+        <div class="multiple-path">${chips}</div>
+        ${nextIsTooBig ? `
+          <div class="too-far">
+            <span>Si doy otro salto:</span>
+            <strong>${step.divisor} × ${step.expected + 1} = ${step.discovery.next}</strong>
+            <b>${step.discovery.next} se pasa de ${step.current}, así que me detengo.</b>
+          </div>
+        ` : ''}
+        <div class="discovery-conclusion">
+          <span>Cuenta los saltos que sí pudiste dar.</span>
+          <strong>Ese número es la cifra que irá arriba.</strong>
+        </div>
+      `;
+    }
+
+    if (step.kind === 'multiply') {
+      return `
+        <div class="discovery-label">CÓMO LO DESCUBRO</div>
+        <div class="operation-model">
+          <span>Tomo la cifra que acabo de escribir arriba</span>
+          <strong>${step.quotientDigit} × ${step.divisor} = ?</strong>
+          <small>Multiplico esa cifra por el divisor.</small>
+        </div>
+      `;
+    }
+
+    if (step.kind === 'subtract') {
+      return `
+        <div class="discovery-label">CÓMO LO DESCUBRO</div>
+        <div class="operation-model">
+          <span>Tenía ${step.current} y ya usé ${step.product}</span>
+          <strong>${step.current} − ${step.product} = ?</strong>
+          <small>La resta me dice cuánto quedó.</small>
+        </div>
+      `;
+    }
+
+    if (step.kind === 'bring') {
+      return `
+        <div class="discovery-label">CÓMO LO DESCUBRO</div>
+        <div class="bring-model">
+          <div><span>Quedó</span><strong>${step.remainder}</strong></div>
+          <div class="bring-arrow">＋</div>
+          <div><span>Bajo</span><strong>${step.nextDigit}</strong></div>
+          <div class="bring-arrow">→</div>
+          <div class="bring-result"><span>Ahora trabajo con</span><strong>${step.nextCurrent}</strong></div>
+        </div>
+      `;
+    }
+
+    if (step.kind === 'repeat') {
+      return `
+        <div class="discovery-label">RECUERDA EL CICLO</div>
+        <div class="repeat-cycle-model">
+          <strong>DIVIDO</strong><span>→</span>
+          <strong>MULTIPLICO</strong><span>→</span>
+          <strong>RESTO</strong><span>→</span>
+          <strong>BAJO</strong><span>→</span>
+          <b>REPITO</b>
+        </div>
+        <p class="repeat-next">Ahora vuelves a DIVIDIR usando <strong>${step.nextCurrent}</strong>, no el número completo del inicio.</p>
+      `;
+    }
+
+    return '';
   }
 
   function buildLongDivisionSteps(dividend, divisor) {
@@ -239,10 +946,14 @@
         phase:'divide',
         cycle,
         title:`Ciclo ${cycle}: DIVIDO`,
-        why:`Ahora estamos trabajando solamente con ${current}. Necesitamos saber cuántas veces cabe ${divisor} dentro de ese número.`,
-        forWhat:'La respuesta será la siguiente cifra del cociente.',
-        how:`Busca cuántas veces cabe ${divisor} en ${current} sin pasarte. Esa cifra se escribe arriba, en el cociente.`,
-        prompt:`¿Cuántas veces cabe ${divisor} en ${current} sin pasarse?`,
+        why:`Trabaja solamente con ${current}. Ahora debes descubrir cuántas veces cabe ${divisor} sin pasarte.`,
+        forWhat:`Descubrirás la siguiente cifra del cociente: cuántos grupos completos de ${divisor} caben en ${current}.`,
+        how:`Cuenta de ${divisor} en ${divisor}: ${divisor}, ${divisor * 2}${q >= 3 ? `, ${divisor * 3}` : ''}… Detente antes de superar ${current}. Luego cuenta cuántos saltos diste.`,
+        prompt:`Haz los saltos. ¿Cuántas veces cabe ${divisor} en ${current} sin pasarse?`,
+        current,
+        divisor,
+        quotientDigit:q,
+        discovery:buildDivisionDiscovery(current, divisor),
         expected:q,
         write:`Escribe ${q} arriba, en el cociente.`,
         placement:`El ${q} va arriba, alineado con la cifra del dividendo que acabas de trabajar.`,
@@ -256,10 +967,14 @@
         phase:'multiply',
         cycle,
         title:`Ciclo ${cycle}: MULTIPLICO`,
-        why:`Acabas de escribir ${q} porque ${divisor} cabe ${q} vez${q === 1 ? '' : 'es'} en ${current}.`,
-        forWhat:`Multiplicamos para saber cuánto de ${current} acabamos de usar.`,
-        how:`Calcula ${q} × ${divisor}. Escribe ${product} debajo de ${current}, alineando las unidades.`,
-        prompt:`¿Cuánto es ${q} × ${divisor}?`,
+        why:`Toma la cifra ${q} que acabas de escribir arriba y multiplícala por el divisor ${divisor}.`,
+        forWhat:`Descubrirás cuánto de ${current} ya quedó usado por los ${q} grupos que encontraste.`,
+        how:`Haz ${q} × ${divisor}. Después escribe el resultado debajo de ${current}, alineando las unidades.`,
+        prompt:`Calcula en tu cuaderno: ${q} × ${divisor}. ¿Cuánto obtienes?`,
+        current,
+        divisor,
+        quotientDigit:q,
+        product,
         expected:product,
         write:`Escribe ${product} debajo de ${current}.`,
         placement:`El ${product} va debajo de ${current}, porque representa la cantidad que acabas de usar.`,
@@ -273,10 +988,13 @@
         phase:'subtract',
         cycle,
         title:`Ciclo ${cycle}: RESTO`,
-        why:`De los ${current} que teníamos, ya usamos ${product}.`,
-        forWhat:'Restamos para descubrir cuánto quedó sin usar.',
-        how:`Haz la resta ${current} − ${product} en tu cuaderno y escribe ${remainder} debajo.`,
-        prompt:`¿Cuánto es ${current} − ${product}?`,
+        why:`Tenías ${current} y la multiplicación mostró que ya usaste ${product}. Ahora quita lo que ya utilizaste.`,
+        forWhat:`Descubrirás cuánto quedó sin repartir antes de continuar.`,
+        how:`Escribe ${product} debajo de ${current}, traza la resta y calcula ${current} − ${product}.`,
+        prompt:`Haz la resta en tu cuaderno: ${current} − ${product}. ¿Cuánto quedó?`,
+        current,
+        product,
+        remainder,
         expected:remainder,
         write:`Escribe ${remainder} como resultado de la resta.`,
         placement:`El ${remainder} va debajo de la resta. Es lo que quedó después de usar ${product}.`,
@@ -294,10 +1012,13 @@
           phase:'bring',
           cycle,
           title:`Ciclo ${cycle}: BAJO`,
-          why:`Todavía queda la cifra ${nextDigit} del dividendo por trabajar.`,
-          forWhat:'La bajamos para unirla con lo que quedó y formar el siguiente número de trabajo.',
-          how:`Baja el ${nextDigit} y colócalo a la derecha del ${remainder}. Ahora tendrás ${nextCurrent}.`,
-          prompt:`Cuando en tu cuaderno veas ${nextCurrent}, toca “Ya lo hice”.`,
+          why:`Todavía queda la cifra ${nextDigit} del dividendo sin trabajar.`,
+          forWhat:`Al unirla con el residuo ${remainder}, formarás el nuevo número sobre el que vuelve a empezar el ciclo.`,
+          how:`Traza visualmente el ${nextDigit} hacia abajo y escríbelo a la derecha de ${remainder}. Así formas ${nextCurrent}.`,
+          prompt:`Hazlo en tu cuaderno hasta que veas ${nextCurrent}.`,
+          remainder,
+          nextDigit,
+          nextCurrent,
           placement:`Baja el ${nextDigit} hasta dejarlo a la derecha del residuo ${remainder}.`,
           confirm:true,
           quotientAfter:quotient,
@@ -310,10 +1031,11 @@
           phase:'repeat',
           cycle,
           title:`Ciclo ${cycle}: REPITO`,
-          why:`Ya formaste un nuevo número: ${nextCurrent}.`,
-          forWhat:'Ahora comienza otra vuelta exactamente igual. No cambia el procedimiento.',
-          how:'Vuelve al primer paso de la regla de NOVA: DIVIDO.',
-          prompt:`Di en voz baja: “Divido, multiplico, resto, bajo y repito”. Después toca “Volver a DIVIDIR”.`,
+          why:`Ya formaste un nuevo número de trabajo: ${nextCurrent}.`,
+          forWhat:'Esto te permite repetir exactamente la misma secuencia sin inventar un procedimiento nuevo.',
+          how:`Vuelve a DIVIDIR, pero ahora usando ${nextCurrent}. Después volverás a MULTIPLICAR, RESTAR y BAJAR si quedan cifras.`,
+          prompt:`Repite la regla: DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO.`,
+          nextCurrent,
           placement:`Tu siguiente número de trabajo es ${nextCurrent}. No uses de nuevo ${dividend} completo.`,
           confirm:true,
           quotientAfter:quotient,
@@ -411,7 +1133,7 @@
   }
 
   function setNotebookQuotient(step) {
-    if (step?.quotientAfter != null) notebookRevealedQuotient = String(step.quotientAfter);
+    // Nunca mostramos una cifra del cociente antes de que Emiliano la descubra.
     notebookQuotient.textContent = notebookRevealedQuotient || '?';
   }
 
@@ -437,6 +1159,11 @@
     notebookForWhat.textContent = step.forWhat;
     notebookHow.textContent = step.how;
     notebookPrompt.textContent = step.prompt;
+
+    const discovery = discoveryMarkup(step);
+    notebookDiscovery.innerHTML = discovery;
+    notebookDiscovery.hidden = !discovery;
+
     placementHelp.hidden = true;
     placementHelp.textContent = step.placement || 'Copia la ubicación que ves en el modelo.';
     updateProcedureStrip(step);
@@ -461,14 +1188,26 @@
           return;
         }
         if (value !== step.expected) {
+          const skillMap = {divide:'fits', multiply:'multiply', subtract:'subtract'};
+          recordAcademySkill(skillMap[step.kind] || 'placement', false);
           playOops();
-          showToast(`Revisa este paso con NOVA. Piensa en el por qué y vuelve a calcular.`, 2600);
+          showToast(`Revisa este paso con NOVA. No adivines: usa el método del paso actual.`, 2600);
           input.select();
           return;
         }
+        {
+          const skillMap = {divide:'fits', multiply:'multiply', subtract:'subtract'};
+          recordAcademySkill(skillMap[step.kind] || 'placement', true);
+        }
         playSuccess();
         if (step.journal) notebookJournalLines.push(step.journal);
-        if (step.quotientAfter != null) notebookRevealedQuotient = String(step.quotientAfter);
+
+        // La nueva cifra del cociente aparece únicamente después
+        // de que Emiliano la encontró correctamente en el paso DIVIDO.
+        if (step.kind === 'divide' && step.quotientAfter != null) {
+          notebookRevealedQuotient = String(step.quotientAfter);
+        }
+
         showToast(step.write || 'Ese paso quedó listo en tu cuaderno.', 1800);
         advanceNotebookStep();
       });
@@ -487,8 +1226,9 @@
             : '✅ Ya lo hice';
       btn.addEventListener('click', () => {
         playTap();
+        if (step.kind === 'bring') recordAcademySkill('bring', true);
+        if (step.kind === 'setup' || step.kind === 'observe') recordAcademySkill('placement', true);
         if (step.journal) notebookJournalLines.push(step.journal);
-        if (step.quotientAfter != null) notebookRevealedQuotient = String(step.quotientAfter);
         advanceNotebookStep();
       });
       notebookAnswerArea.appendChild(btn);
@@ -509,7 +1249,9 @@
       ? `La regla fue siempre la misma: DIVIDO para saber cuántas veces cabe, MULTIPLICO para saber cuánto usé, RESTO para saber cuánto quedó, BAJO la siguiente cifra y REPITO. Al terminar no quedó residuo. El resultado es ${quotient}.`
       : `La regla fue siempre la misma: DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. Cuando ya no quedaron cifras por bajar, quedó ${remainder}; por eso el cociente es ${quotient} y el residuo es ${remainder}.`;
 
+    recordAcademySkill('exact', true);
     notebookCompletedLessons = Math.max(notebookCompletedLessons, notebookLessonIndex + 1);
+    academyState.routeProgress.long = notebookCompletedLessons;
     notebookProgressBar.style.width = `${Math.round((notebookCompletedLessons / notebookLessons.length) * 100)}%`;
     notebookProgressText.textContent = `${Math.round((notebookCompletedLessons / notebookLessons.length) * 100)}%`;
     notebookNextBtn.textContent = notebookLessonIndex === notebookLessons.length - 1
@@ -558,8 +1300,8 @@
   }
 
   function openNotebookModule() {
-    if (!gameCompleted && unlockedCount() < missions.length) {
-      showToast('Primero completa el Atlas Animal para desbloquear el módulo de cuaderno ✏️', 2800);
+    if (!gameCompleted && unlockedCount() < missions.length && !testerMode) {
+      showToast('Primero completa el Atlas Animal para desbloquear la Academia 🎓', 2800);
       return;
     }
 
@@ -574,24 +1316,19 @@
     aiTutorCard.hidden = true;
     notebookModule.hidden = false;
 
+    readAcademyState();
     const saved = readNotebookState();
     if (saved) {
-      notebookLessonIndex = Math.max(0, Math.min(notebookLessons.length - 1, Number(saved.lesson) || 0));
-      notebookStepIndex = Math.max(0, Number(saved.step) || 0);
       notebookCompletedLessons = Math.max(0, Number(saved.completed) || 0);
-      notebookRevealedQuotient = String(saved.quotient || '');
-      notebookJournalLines = Array.isArray(saved.journal) ? saved.journal.slice(-20) : [];
-      notebookChatHistory = Array.isArray(saved.chat) ? saved.chat.slice(-12) : [];
-      startNotebookLesson(notebookLessonIndex, true);
-    } else {
-      startNotebookLesson(0, false);
     }
-
+    renderAcademyHome();
     window.scrollTo({top:0, behavior:'smooth'});
   }
 
   function closeNotebookModule() {
     saveNotebookState();
+    saveAcademyState();
+    academyCurrentRoute = null;
     notebookModule.hidden = true;
     document.querySelector('.actions').hidden = false;
     document.querySelector('.progress-wrap').hidden = false;
@@ -1941,6 +2678,7 @@
     const keys = [
       SAVE_KEY,
       NOTEBOOK_SAVE_KEY,
+      ACADEMY_SAVE_KEY,
       'emilianoMission',
       'emilianoUnlocked',
       'emilianoSound',
@@ -2026,9 +2764,33 @@
     notebookJournalLines = [];
     notebookChatHistory = [];
 
+    academyHome.hidden = true;
+    academyPracticeView.hidden = true;
+    notebookLessonView.hidden = false;
+    academyHomeBtn.hidden = false;
+    academyCurrentRoute = 'long';
     startNotebookLesson(notebookLessonIndex, false);
     showToast(`🧪 Probando cuaderno ${notebookLessonIndex + 1} de ${notebookLessons.length}`, 2200);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function jumpToTesterAcademyRoute(routeId) {
+    activateTesterMode();
+    closeAllTesterOverlays();
+
+    finalCard.hidden = true;
+    rewardCard.hidden = true;
+    gameArea.hidden = true;
+    document.querySelector('.actions').hidden = true;
+    document.querySelector('.progress-wrap').hidden = true;
+    document.querySelector('.hero-card').hidden = true;
+    document.querySelector('.world-strip').hidden = true;
+    aiTutorCard.hidden = true;
+    notebookModule.hidden = false;
+
+    academyState.routeProgress[routeId] = 0;
+    startAcademyRoute(routeId);
+    showToast(`🧪 Probando ruta: ${academyRoutes.find(r => r.id === routeId)?.title || routeId}`, 2200);
   }
 
   function buildTesterNavigator() {
@@ -2052,6 +2814,23 @@
     });
 
     testerNotebookGrid.innerHTML = '';
+
+    academyRoutes.filter(r => r.id !== 'long').forEach((route, index) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tester-mission-btn tester-notebook-btn';
+      btn.innerHTML = `
+        <span>${route.icon}</span>
+        <div>
+          <small>RUTA ${index + 1}</small>
+          <strong>${route.title}</strong>
+          <em>${route.goal}</em>
+        </div>
+      `;
+      btn.addEventListener('click', () => jumpToTesterAcademyRoute(route.id));
+      testerNotebookGrid.appendChild(btn);
+    });
+
     notebookLessons.forEach((lesson, index) => {
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -2059,7 +2838,7 @@
       btn.innerHTML = `
         <span>${index + 1}</span>
         <div>
-          <small>${lesson.dividend} ÷ ${lesson.divisor}</small>
+          <small>CUADERNO · ${lesson.dividend} ÷ ${lesson.divisor}</small>
           <strong>${lesson.title}</strong>
           <em>${lesson.focus}</em>
         </div>
@@ -2236,6 +3015,46 @@
   });
 
 
+  academyHomeBtn?.addEventListener('click', () => {
+    playTap();
+    renderAcademyHome();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  academyContinueBtn?.addEventListener('click', () => {
+    if (!academyCurrentRoute || academyCurrentRoute === 'long') return;
+    const set = academyChallengeSets[academyCurrentRoute] || [];
+    const next = academyChallengeIndex + 1;
+    if (next >= set.length) {
+      academyState.routeProgress[academyCurrentRoute] = set.length;
+      saveAcademyState();
+      playSuccess();
+      showToast('Ruta completada. NOVA actualizó tu mapa de habilidades ✨', 2600);
+      renderAcademyHome();
+      window.scrollTo({top:0,behavior:'smooth'});
+      return;
+    }
+    academyChallengeIndex = next;
+    academyState.routeProgress[academyCurrentRoute] = next;
+    saveAcademyState();
+    renderAcademyChallenge();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  academyAskNovaBtn?.addEventListener('click', () => {
+    playTap();
+    academyChat.hidden = !academyChat.hidden;
+    if (!academyChat.hidden) academyChatInput.focus({preventScroll:true});
+  });
+
+  academyChatForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const q = academyChatInput.value.trim();
+    if (!q) return;
+    academyChatInput.value = '';
+    askAcademyNova(q);
+  });
+
   notebookStartBtn?.addEventListener('click', openNotebookModule);
   notebookSettingsBtn?.addEventListener('click', () => {
     settingsModal.hidden = true;
@@ -2248,10 +3067,10 @@
     if (notebookLessonIndex >= notebookLessons.length - 1) {
       notebookCompletedLessons = notebookLessons.length;
       saveNotebookState();
-      notebookDoneTitle.textContent = '¡Módulo de cuaderno completado!';
-      notebookDoneFeedback.textContent = 'Ya recorriste el procedimiento completo: DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. Ahora la meta es practicarlo cada vez con menos ayuda de NOVA.';
-      notebookNextBtn.textContent = 'Volver al Atlas';
-      notebookNextBtn.onclick = () => closeNotebookModule();
+      notebookDoneTitle.textContent = '¡Ruta de cuaderno completada!';
+      notebookDoneFeedback.textContent = 'Ya recorriste el procedimiento completo: DIVIDO, MULTIPLICO, RESTO, BAJO y REPITO. NOVA guardó lo que practicastes en el mapa de habilidades.';
+      notebookNextBtn.textContent = 'Volver a la Academia';
+      notebookNextBtn.onclick = () => renderAcademyHome();
       return;
     }
     notebookLessonIndex += 1;
@@ -2289,9 +3108,9 @@
   skipIntroBtn.addEventListener('click', () => openApp(false));
 
   // Guarda incluso si se cierra el navegador, se bloquea la tablet o cambia de app.
-  window.addEventListener('pagehide', () => { saveGameState(); saveNotebookState(); });
+  window.addEventListener('pagehide', () => { saveGameState(); saveNotebookState(); saveAcademyState(); });
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') { saveGameState(); saveNotebookState(); }
+    if (document.visibilityState === 'hidden') { saveGameState(); saveNotebookState(); saveAcademyState(); }
   });
 
   const initialSaved = readSavedGame();

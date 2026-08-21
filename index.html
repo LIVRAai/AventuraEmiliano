@@ -158,134 +158,227 @@
       <h2>¡Emiliano, completaste la expedición!</h2>
       <p>Recuperaste los 36 códigos y atravesaste todos los hábitats. El Atlas Animal vuelve a estar conectado.</p>
       <div class="final-actions">
-        <button id="notebookStartBtn" class="primary-btn notebook-launch-btn">✏️ Aprender a dividir en mi cuaderno</button>
+        <button id="notebookStartBtn" class="primary-btn notebook-launch-btn">🎓 Entrar a la Academia de División</button>
         <button id="replayBtn" class="secondary-btn">Volver a explorar</button>
       </div>
     </section>
 
 
-    <section id="notebookModule" class="notebook-module" hidden>
-      <div class="notebook-top">
+    <section id="notebookModule" class="notebook-module academy-module" hidden>
+      <div class="notebook-top academy-top">
         <button id="notebookBackBtn" class="notebook-back-btn" type="button">← Atlas</button>
         <div>
           <p class="eyebrow">AVENTURA 2</p>
-          <h2>Dividir en mi cuaderno</h2>
+          <h2>Academia de División con NOVA</h2>
         </div>
-        <div id="notebookLessonCounter" class="notebook-counter">1 / 12</div>
+        <button id="academyHomeBtn" class="notebook-back-btn academy-home-btn" type="button" hidden>⌂ Academia</button>
       </div>
 
-      <section class="notebook-hero">
-        <div class="notebook-animal" id="notebookAnimal">🔬</div>
-        <div>
-          <span id="notebookMissionLabel" class="notebook-kicker">MISIÓN DE CUADERNO</span>
-          <h3 id="notebookTitle">La primera división escrita</h3>
-          <p id="notebookStory">NOVA te acompañará mientras haces la división a mano.</p>
-        </div>
-      </section>
+      <section id="academyHome" class="academy-home">
+        <section class="academy-welcome">
+          <div class="academy-welcome-orb">N</div>
+          <div>
+            <p class="eyebrow">NOVA · PLAN DE ENTRENAMIENTO</p>
+            <h3>Vamos a fortalecer cada pieza de la división</h3>
+            <p>No todas las dificultades son iguales. Practicaremos una habilidad a la vez y NOVA irá detectando cuáles necesitan más entrenamiento.</p>
+          </div>
+        </section>
 
-      <div class="notebook-progress-wrap">
-        <div class="progress-label">
-          <span>Progreso del módulo</span>
-          <strong id="notebookProgressText">0%</strong>
-        </div>
-        <div class="progress-track">
-          <div id="notebookProgressBar" class="progress-bar"></div>
-        </div>
-      </div>
+        <section class="academy-status-card">
+          <div>
+            <span>PROGRESO DE HABILIDADES</span>
+            <strong id="academyMasteryText">Empezando</strong>
+          </div>
+          <div class="academy-status-bar"><div id="academyMasteryBar"></div></div>
+          <p id="academyRecommendation">Empieza por “¿Cuántas veces cabe?” y después practica la división en el cuaderno.</p>
+        </section>
 
-      <section class="procedure-guide-card" aria-label="Regla de NOVA para dividir">
-        <div class="procedure-guide-title">
-          <span>LA REGLA DE NOVA</span>
-          <strong>Haz siempre el mismo ciclo</strong>
-        </div>
-        <section class="procedure-strip" aria-label="Pasos de la división">
-          <div class="procedure-step" data-procedure="divide"><span>➗</span><strong>DIVIDO</strong><small>¿Cuántas veces cabe?</small></div>
-          <div class="procedure-step" data-procedure="multiply"><span>✖️</span><strong>MULTIPLICO</strong><small>¿Cuánto usé?</small></div>
-          <div class="procedure-step" data-procedure="subtract"><span>➖</span><strong>RESTO</strong><small>¿Cuánto quedó?</small></div>
-          <div class="procedure-step" data-procedure="bring"><span>⬇️</span><strong>BAJO</strong><small>Traigo otra cifra</small></div>
-          <div class="procedure-step" data-procedure="repeat"><span>🔁</span><strong>REPITO</strong><small>Vuelvo a dividir</small></div>
+        <div id="academyRouteGrid" class="academy-route-grid"></div>
+
+        <section class="academy-skill-report">
+          <div class="academy-section-head">
+            <div>
+              <span>LO QUE NOVA VA OBSERVANDO</span>
+              <h3>Mapa de habilidades</h3>
+            </div>
+            <small>Se actualiza mientras practica</small>
+          </div>
+          <div id="academySkillGrid" class="academy-skill-grid"></div>
         </section>
       </section>
 
-      <section class="paper-layout-card">
-        <div class="paper-layout-head">
+      <section id="academyPracticeView" class="academy-practice-view" hidden>
+        <div class="academy-practice-head">
+          <div id="academyPracticeIcon" class="academy-practice-icon">🎯</div>
           <div>
-            <span>MODELO DE UBICACIÓN</span>
-            <strong>Hazlo tú en el cuaderno</strong>
+            <span id="academyPracticeKicker">ENTRENAMIENTO</span>
+            <h3 id="academyPracticeTitle">Habilidad</h3>
+            <p id="academyPracticeGoal"></p>
           </div>
-          <button id="showPlacementBtn" class="paper-help-btn" type="button">👀 ¿Dónde lo escribo?</button>
+          <div id="academyPracticeCounter" class="notebook-counter">1 / 6</div>
         </div>
 
-        <div class="division-layout" aria-label="Modelo de división escrita">
-          <div id="notebookDividend" class="division-dividend">84</div>
-          <div class="division-bracket"></div>
-          <div id="notebookDivisor" class="division-divisor">4</div>
-          <div id="notebookQuotient" class="division-quotient" aria-label="Cociente">?</div>
+        <div class="academy-mini-progress">
+          <div id="academyPracticeBar"></div>
         </div>
 
-        <p id="placementHelp" class="placement-help" hidden></p>
-
-        <div class="cycle-summary">
-          <span>CICLO ACTUAL</span>
-          <strong id="notebookCycleLabel">Preparando la división</strong>
-        </div>
-
-        <div id="notebookJournal" class="notebook-journal"></div>
-      </section>
-
-      <section class="nova-notebook-card" aria-live="polite">
-        <div class="nova-notebook-head">
+        <section class="academy-nova-explain">
           <div class="nova-orb">N</div>
           <div>
-            <p class="eyebrow">NOVA · A TU LADO</p>
-            <strong id="notebookStepTitle">Vamos a escribir la división</strong>
+            <span>NOVA · ANTES DE RESPONDER</span>
+            <p id="academyNovaExplain"></p>
           </div>
-          <span id="notebookStepCount" class="ai-status">PASO 1</span>
-        </div>
+        </section>
 
-        <div class="nova-three">
-          <article>
-            <span>¿POR QUÉ?</span>
-            <p id="notebookWhy"></p>
-          </article>
-          <article>
-            <span>¿PARA QUÉ?</span>
-            <p id="notebookForWhat"></p>
-          </article>
-          <article>
-            <span>¿CÓMO?</span>
-            <p id="notebookHow"></p>
-          </article>
-        </div>
+        <section id="academyChallenge" class="academy-challenge"></section>
 
-        <div class="notebook-prompt-box">
-          <strong id="notebookPrompt"></strong>
-          <div id="notebookAnswerArea"></div>
-        </div>
+        <section id="academyFeedback" class="academy-feedback" hidden>
+          <span id="academyFeedbackLabel">MIRA LA LÓGICA</span>
+          <strong id="academyFeedbackTitle"></strong>
+          <p id="academyFeedbackText"></p>
+          <button id="academyContinueBtn" class="primary-btn" type="button">Siguiente reto →</button>
+        </section>
 
-        <button id="notebookHelpBtn" class="notebook-help-btn" type="button">💬 Preguntarle a NOVA</button>
-
-        <div id="notebookChat" class="notebook-chat" hidden>
-          <div id="notebookChatMessages" class="tutor-chat">
+        <button id="academyAskNovaBtn" class="notebook-help-btn" type="button">💬 Preguntarle a NOVA</button>
+        <div id="academyChat" class="notebook-chat" hidden>
+          <div id="academyChatMessages" class="tutor-chat">
             <div class="tutor-message nova-message">
               <span>NOVA</span>
-              <p>Pregúntame, yo puedo ayudarte con este paso.</p>
+              <p>Pregúntame, yo puedo ayudarte a entender este reto.</p>
             </div>
           </div>
-          <form id="notebookChatForm" class="tutor-input-row">
-            <label for="notebookChatInput" class="sr-only">Pregúntale a NOVA sobre la división del cuaderno</label>
-            <input id="notebookChatInput" maxlength="180" autocomplete="off" placeholder="Ej.: ¿Por qué escribo este número aquí?" />
-            <button id="notebookChatSend" type="submit">Enviar</button>
+          <form id="academyChatForm" class="tutor-input-row">
+            <label for="academyChatInput" class="sr-only">Pregúntale a NOVA</label>
+            <input id="academyChatInput" maxlength="180" autocomplete="off" placeholder="Ej.: ¿Cómo sé cuál número usar?" />
+            <button type="submit">Enviar</button>
           </form>
         </div>
       </section>
 
-      <section id="notebookLessonDone" class="notebook-done-card" hidden>
-        <div class="notebook-done-icon">✏️</div>
-        <p class="eyebrow">DIVISIÓN COMPLETADA EN EL CUADERNO</p>
-        <h3 id="notebookDoneTitle">Terminaste 84 ÷ 4</h3>
-        <p id="notebookDoneFeedback"></p>
-        <button id="notebookNextBtn" class="primary-btn" type="button">Siguiente división →</button>
+      <section id="notebookLessonView" hidden>
+        <div class="notebook-lesson-route-head">
+          <div>
+            <span>RUTA · DIVISIÓN EN MI CUADERNO</span>
+            <strong>La regla de NOVA: DIVIDO → MULTIPLICO → RESTO → BAJO → REPITO</strong>
+          </div>
+          <div id="notebookLessonCounter" class="notebook-counter">1 / 12</div>
+        </div>
+
+        <section class="notebook-hero">
+          <div class="notebook-animal" id="notebookAnimal">🔬</div>
+          <div>
+            <span id="notebookMissionLabel" class="notebook-kicker">MISIÓN DE CUADERNO</span>
+            <h3 id="notebookTitle">La primera división escrita</h3>
+            <p id="notebookStory">NOVA te acompañará mientras haces la división a mano.</p>
+          </div>
+        </section>
+
+        <div class="notebook-progress-wrap">
+          <div class="progress-label">
+            <span>Progreso de esta ruta</span>
+            <strong id="notebookProgressText">0%</strong>
+          </div>
+          <div class="progress-track">
+            <div id="notebookProgressBar" class="progress-bar"></div>
+          </div>
+        </div>
+
+        <section class="procedure-guide-card" aria-label="Regla de NOVA para dividir">
+          <div class="procedure-guide-title">
+            <span>LA REGLA DE NOVA</span>
+            <strong>Haz siempre el mismo ciclo</strong>
+          </div>
+          <section class="procedure-strip" aria-label="Pasos de la división">
+            <div class="procedure-step" data-procedure="divide"><span>➗</span><strong>DIVIDO</strong><small>¿Cuántas veces cabe?</small></div>
+            <div class="procedure-step" data-procedure="multiply"><span>✖️</span><strong>MULTIPLICO</strong><small>¿Cuánto usé?</small></div>
+            <div class="procedure-step" data-procedure="subtract"><span>➖</span><strong>RESTO</strong><small>¿Cuánto quedó?</small></div>
+            <div class="procedure-step" data-procedure="bring"><span>⬇️</span><strong>BAJO</strong><small>Traigo otra cifra</small></div>
+            <div class="procedure-step" data-procedure="repeat"><span>🔁</span><strong>REPITO</strong><small>Vuelvo a dividir</small></div>
+          </section>
+        </section>
+
+        <section class="paper-layout-card">
+          <div class="paper-layout-head">
+            <div>
+              <span>MODELO DE UBICACIÓN</span>
+              <strong>Hazlo tú en el cuaderno</strong>
+            </div>
+            <button id="showPlacementBtn" class="paper-help-btn" type="button">👀 ¿Dónde lo escribo?</button>
+          </div>
+
+          <div class="division-layout" aria-label="Modelo de división escrita">
+            <div id="notebookDividend" class="division-dividend">84</div>
+            <div class="division-bracket"></div>
+            <div id="notebookDivisor" class="division-divisor">4</div>
+            <div id="notebookQuotient" class="division-quotient" aria-label="Cociente">?</div>
+          </div>
+
+          <p id="placementHelp" class="placement-help" hidden></p>
+
+          <div class="cycle-summary">
+            <span>CICLO ACTUAL</span>
+            <strong id="notebookCycleLabel">Preparando la división</strong>
+          </div>
+
+          <div id="notebookJournal" class="notebook-journal"></div>
+        </section>
+
+        <section class="nova-notebook-card" aria-live="polite">
+          <div class="nova-notebook-head">
+            <div class="nova-orb">N</div>
+            <div>
+              <p class="eyebrow">NOVA · A TU LADO</p>
+              <strong id="notebookStepTitle">Vamos a escribir la división</strong>
+            </div>
+            <span id="notebookStepCount" class="ai-status">PASO 1</span>
+          </div>
+
+          <div class="nova-three">
+            <article>
+              <span>¿QUÉ HAGO?</span>
+              <p id="notebookWhy"></p>
+            </article>
+            <article class="notebook-how-card">
+              <span>¿CÓMO LO HAGO?</span>
+              <p id="notebookHow"></p>
+            </article>
+            <article>
+              <span>¿QUÉ DESCUBRO?</span>
+              <p id="notebookForWhat"></p>
+            </article>
+          </div>
+
+          <div id="notebookDiscovery" class="notebook-discovery" hidden></div>
+
+          <div class="notebook-prompt-box">
+            <strong id="notebookPrompt"></strong>
+            <div id="notebookAnswerArea"></div>
+          </div>
+
+          <button id="notebookHelpBtn" class="notebook-help-btn" type="button">💬 Preguntarle a NOVA</button>
+
+          <div id="notebookChat" class="notebook-chat" hidden>
+            <div id="notebookChatMessages" class="tutor-chat">
+              <div class="tutor-message nova-message">
+                <span>NOVA</span>
+                <p>Pregúntame, yo puedo ayudarte con este paso.</p>
+              </div>
+            </div>
+            <form id="notebookChatForm" class="tutor-input-row">
+              <label for="notebookChatInput" class="sr-only">Pregúntale a NOVA sobre la división del cuaderno</label>
+              <input id="notebookChatInput" maxlength="180" autocomplete="off" placeholder="Ej.: ¿Por qué escribo este número aquí?" />
+              <button id="notebookChatSend" type="submit">Enviar</button>
+            </form>
+          </div>
+        </section>
+
+        <section id="notebookLessonDone" class="notebook-done-card" hidden>
+          <div class="notebook-done-icon">✏️</div>
+          <p class="eyebrow">DIVISIÓN COMPLETADA EN EL CUADERNO</p>
+          <h3 id="notebookDoneTitle">Terminaste 84 ÷ 4</h3>
+          <p id="notebookDoneFeedback"></p>
+          <button id="notebookNextBtn" class="primary-btn" type="button">Siguiente división →</button>
+        </section>
       </section>
     </section>
 
@@ -437,9 +530,9 @@
           <div class="tester-section-head">
             <div>
               <span>AVENTURA 2</span>
-              <h3>Dividir en mi cuaderno</h3>
+              <h3>Academia de División</h3>
             </div>
-            <b>12 misiones</b>
+            <b>8 rutas + 12 cuaderno</b>
           </div>
           <div id="testerNotebookGrid" class="tester-mission-grid"></div>
         </section>

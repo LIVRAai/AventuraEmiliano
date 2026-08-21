@@ -46,7 +46,7 @@ function safeTutorPayload(body = {}) {
       : null;
 
   return {
-    mode: body.mode === 'feedback' ? 'feedback' : (body.mode === 'notebook' ? 'notebook' : 'chat'),
+    mode: body.mode === 'feedback' ? 'feedback' : (body.mode === 'notebook' ? 'notebook' : (body.mode === 'academy' ? 'academy' : 'chat')),
     reason: ['help', 'error', 'another', 'visual', 'step', 'question'].includes(body.reason)
       ? body.reason
       : 'question',
@@ -64,6 +64,11 @@ function safeTutorPayload(body = {}) {
     attempt: cleanText(body.attempt, 350),
     attemptCount: Math.max(0, Math.min(20, Number(body.attemptCount) || 0)),
     history: safeHistory(body.history),
+    academy: body.academy && typeof body.academy === 'object' ? {
+      route: cleanText(body.academy.route, 100),
+      goal: cleanText(body.academy.goal, 220),
+      challenge: cleanText(body.academy.challenge, 900)
+    } : null,
     notebook: body.notebook && typeof body.notebook === 'object' ? {
       dividend: numberOrNull(body.notebook.dividend),
       divisor: numberOrNull(body.notebook.divisor),
@@ -158,10 +163,81 @@ export async function POST(request) {
 
   const lesson = safeTutorPayload(body);
 
-  if ((lesson.mode === 'chat' || lesson.mode === 'notebook') && !lesson.question) {
+  if ((lesson.mode === 'chat' || lesson.mode === 'notebook' || lesson.mode === 'academy') && !lesson.question) {
     return json({ error: 'Escribe una pregunta para NOVA.' }, 400);
   }
 
+
+
+  if (lesson.mode === 'academy') {
+    const a = lesson.academy || {};
+    const instructions = [
+      'Eres NOVA, tutor de matemáticas de Emiliano dentro de la Academia de División.',
+      'Tu función es enseñar la habilidad concreta del reto actual, no resolver todo por él.',
+      'Nunca menciones diagnósticos, autismo, neurodivergencia ni etiquetas clínicas o educativas.',
+      'Responde primero la pregunta de Emiliano y después enséñale una estrategia concreta para descubrir la respuesta.',
+      'Si el reto es “cuántas veces cabe”, usa múltiplos o la multiplicación inversa y muestra dónde detenerse antes de pasarse.',
+      'Si el reto es términos de la división, explica el papel del número dentro de la operación.',
+      'Si es exacta/inexacta, usa el residuo como criterio.',
+      'Si es divisores, conecta divisor con división exacta y residuo cero.',
+      'Si es primo/compuesto, cuenta divisores.',
+      'Si es factores primos, recuerda que todos los factores finales deben ser primos.',
+      'Si es un problema verbal, ayuda a identificar qué se conoce y qué se busca antes de elegir la operación.',
+      'Habla en español claro, literal y cálido. Usa 2 a 5 frases cortas.',
+      'No uses Markdown, asteriscos, listas largas ni lenguaje infantilizado.',
+      'No hagas preguntas personales ni pidas información privada.'
+    ].join(' ');
+
+    const transcript = lesson.history.length
+      ? lesson.history.map((m) => `${m.role === 'assistant' ? 'NOVA' : 'Emiliano'}: ${m.content}`).join('\n')
+      : '(sin conversación previa)';
+
+    const input = [
+      `RUTA: ${a.route}`,
+      `OBJETIVO: ${a.goal}`,
+      `RETO ACTUAL: ${a.challenge}`,
+      '',
+      'CONVERSACIÓN:',
+      transcript,
+      '',
+      'PREGUNTA DE EMILIANO:',
+      lesson.question,
+      '',
+      'Ayúdalo a comprender la lógica del reto. No le entregues una respuesta aislada: enséñale cómo descubrirla.'
+    ].join('\n');
+
+    try {
+      const openaiResponse = await fetch('https://api.openai.com/v1/responses', {
+        method:'POST',
+        headers:{
+          Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          model:MODEL,
+          store:false,
+          reasoning:{effort:'none'},
+          max_output_tokens:240,
+          instructions,
+          input
+        })
+      });
+
+      const data = await openaiResponse.json().catch(() => ({}));
+      if (!openaiResponse.ok) {
+        if (openaiResponse.status === 401) return json({error:'La clave de OpenAI no es válida. Revisa OPENAI_API_KEY.'},503);
+        if (openaiResponse.status === 429) return json({error:'NOVA está ocupado por un momento. Intenta de nuevo en unos segundos.'},429);
+        return json({error:'NOVA no pudo acompañar este reto en este momento.'},502);
+      }
+
+      const message = cleanTutorOutput(extractOutputText(data));
+      if (!message) return json({error:'NOVA recibió una respuesta vacía.'},502);
+      return json({message,model:MODEL});
+    } catch (error) {
+      console.error('Academy tutor error:', error?.message || error);
+      return json({error:'NOVA no pudo conectarse en este momento.'},500);
+    }
+  }
 
   if (lesson.mode === 'notebook') {
     const n = lesson.notebook || {};
@@ -169,12 +245,14 @@ export async function POST(request) {
       'Eres NOVA, el tutor personal de matemáticas de Emiliano mientras él realiza una división físicamente en su cuaderno.',
       'Tu prioridad es que Emiliano aprenda a hacer la división a mano, no que la pantalla la haga por él.',
       'IMPORTANTE: nunca menciones autismo, neurodivergencia, diagnóstico, necesidades especiales, terapia ni etiquetas clínicas o educativas.',
-      'En cada respuesta debes preservar tres ideas: POR QUÉ se hace el paso, PARA QUÉ sirve dentro de la división y CÓMO se escribe o ejecuta en el cuaderno.',
+      'En cada respuesta debes ayudarle a ejecutar el microprocedimiento del paso actual: QUÉ debe hacer, CÓMO puede descubrir o calcular el número y QUÉ significa lo que acaba de descubrir.',
       'Responde primero la pregunta concreta de Emiliano. Después conecta la respuesta con el paso actual.',
-      'No adelantes varios pasos. Trabaja solamente el paso actual.',
+      'No adelantes varios pasos. Trabaja solamente el paso actual y enséñale cómo obtener el número, no solo qué operación debe hacer.',
       'Explica el significado de los números que se escriben y su ubicación. No presentes el algoritmo como una receta sin sentido.',
       'Cuando hables de colocar un número, indica con claridad dónde va: cociente, debajo del número trabajado, resultado de la resta o cifra que se baja.',
-      'Si Emiliano pregunta por qué se divide una parte del número y no otra, explica que se busca la primera parte desde la izquierda en la que el divisor pueda formar al menos un grupo completo.',
+      'Si está en DIVIDO, enséñale una estrategia concreta para descubrir cuántas veces cabe: contar de divisor en divisor o recorrer sus múltiplos sin pasarse. Ejemplo: para 9 ÷ 3, 3 → 6 → 9 son 3 saltos, así que cabe 3 veces.',
+      'Si el siguiente múltiplo supera el número de trabajo, muéstrale que debe detenerse en el múltiplo anterior.',
+      'Si el divisor es mayor que el número actual y esa posición necesita un cero en el cociente, explica que no cabe ni una vez completa y por eso se escribe 0.',
       'Si pregunta por multiplicar, explica que sirve para saber cuánto de la cantidad ya fue usado por los grupos encontrados.',
       'Si pregunta por restar, explica que sirve para saber cuánto queda sin usar.',
       'Si pregunta por bajar, explica que todavía quedan cifras del dividendo por trabajar y se incorporan al residuo.',
@@ -195,9 +273,9 @@ export async function POST(request) {
       `Lección: ${n.lessonTitle}`,
       `Objetivo: ${n.focus}`,
       `Paso actual: ${n.stepTitle} (${n.phase})`,
-      `POR QUÉ previsto: ${n.why}`,
-      `PARA QUÉ previsto: ${n.forWhat}`,
-      `CÓMO previsto: ${n.how}`,
+      `QUÉ HACER previsto: ${n.why}`,
+      `QUÉ DESCUBRIR previsto: ${n.forWhat}`,
+      `CÓMO HACERLO previsto: ${n.how}`,
       `Consigna actual: ${n.prompt}`,
       '',
       'CONVERSACIÓN RECIENTE:',
